@@ -1,0 +1,47 @@
+21.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Wrong option argument now stops the program and prints a
+              message saying what's wrong.
+            * Added a stepping (step property to the Test class) that
+              allow vary function to steps more or less
+            * Added a warning when a specific testsuite is not found
+
+20.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Thread execution times are grouped in one list and
+              Test.times is now a list of list. Changed a bit
+              print_stats function in order to reflect the changes
+            * Managed to avoid side effect with the vary function at
+              the last execution of the test
+
+19.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Now each test is threadable (and the test has not to
+              bother with this - event if it modifies its context)
+            * Added option '--threads' to let people run the number of
+              threads they want
+
+18.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Added a Collection Class to manage all future test suites
+              that will be written (gleu it's up to you now)
+            * added option '-p', '--path', '--testname', '--testsuite'
+
+17.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Transformed all 0 and 1 to False and True (Learning :-)
+            * Documentation
+            * Trying to apply coding style
+
+16.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Splited in three files :
+              - fss.py that concentrate all filesystem stress tools
+              - stress.py that provides all the basics classes to do
+                the job (have stress tests and stress suites)
+              - stresssuite.py which is the main program
+            * Converted all print calls to print() function calls
+
+07.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Beginning a new project in python
+            * Added a context and functions to managed this context
+              at the begining and at the end of the running function
+              (with default test and such)
+            * Added a vary function that is called between succesive
+              calls in order to vary the context of the test.
+            * added a TODO file
+

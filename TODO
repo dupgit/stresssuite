@@ -1,0 +1,28 @@
+ . Add new tests on files
+ . Add other testsuites (eg to test postgresql for instance)
+ . Add a gnuplot file generation with the results
+ . Add a new Test function (relevant_context for instance) that will
+   be written for the test and that will return something that will
+   resume context in a relevant manner with the point of view of the
+   time test comparisons. The aim is to get rid of things that are not
+   really necessary for the results (when printing)
+ . be mode accurate when test could not finish (say which one) and stop
+   testing this particular test -> each test should take care of this
+   and modify it's context in order not to continue the test (even if
+   called)
+ . trap keyboad interrupts ?
+
+
+Done :
+
+  . Rename stressfs to stress_suite
+  . debug mode
+  . Add a Collection Class that will help manage all TestSuites
+  . Add options to manage all tests : running a specific test, a
+    specific testsuite, how many times tests should run, which path ...
+  . Threadable tests
+  . Add a test to avoid execution of the vary function if this is the
+    last test execution
+  . If a parameter is out of range stop execution and print a message
+  . Wrong testsuite name bug (missing a report)
+  . Add a selector to enable selection of a vary function, say *2 or *10
