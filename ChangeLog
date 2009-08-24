@@ -1,3 +1,8 @@
+24.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * New file test : Zero Filed Files Creation
+              New option : --buffer-size that let one specify a buffer size
+              for this new test
+
 21.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Wrong option argument now stops the program and prints a
               message saying what's wrong.

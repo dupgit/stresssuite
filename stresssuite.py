@@ -170,6 +170,7 @@ class Options:
     base_path = '/tmp'
     nb_threads = 1
     step = 2
+    buffer_size = 512
 
     def __init__(self):
         self.runs = 0
@@ -181,6 +182,7 @@ class Options:
         self.base_path = '/tmp'
         self.nb_threads = 1
         self.step = 2
+        self.buffer_size = 512
 
 # Help message for main program
 def usage():
@@ -219,7 +221,10 @@ def usage():
         Tell to run the tests exactly NUM times
 
       --threads=NUM
-        Tell the numbers of threads for one test
+        Tell the numbers of threads for one test (one by default)
+
+      --buffer-size=NUM
+        Tells the buffer size to use when creating files (512 by default)
 
       -s, --step=NUM
         Used in the vary function to step the algorithm (generally it
@@ -273,7 +278,7 @@ def parse_command_line(my_opts):
     short_options = "hlondm:p:s:"
     long_options = ["help", "list", "once", "no-stats", "debug",     \
                     "multiple=", 'testname=', 'testsuite=', 'path=', \
-                    'threads=', 'step=']
+                    'threads=', 'step=', 'buffer-size=']
 
     # Read options and arguments
     try:
@@ -312,12 +317,14 @@ def parse_command_line(my_opts):
             my_opts.nb_threads = transform_to_int(opt, arg)
         elif opt in ('-s', '--step'):
             my_opts.step = transform_to_int(opt, arg)
+        elif opt in ('--buffer-size'):
+            my_opts.buffer_size = transform_to_int(opt, arg)
 
     return my_opts
 # End function parse_command_line()
 
 
-def init_all_tests(collec, base_path, nb_threads, step, debug):
+def init_all_tests(collec, base_path, nb_threads, step, debug, buffer_size):
     """Inits the collection
 
     Add all tests_suites to the collection
@@ -325,7 +332,8 @@ def init_all_tests(collec, base_path, nb_threads, step, debug):
 
     # Add here your own stress suite !
 
-    stressfs = fss.FileSystem_Tests(base_path, nb_threads, step, debug)
+    stressfs = fss.FileSystem_Tests(base_path, nb_threads, step, debug, \
+                                    buffer_size)
     collec.add_suite(stressfs)
 
     return collec
@@ -342,7 +350,7 @@ def main():
 
     collec = init_all_tests(collec, my_opts.base_path,        \
                             my_opts.nb_threads, my_opts.step, \
-                            my_opts.debug)
+                            my_opts.debug, my_opts.buffer_size)
 
     if my_opts.debug == True:
        print("Debug mode is on")

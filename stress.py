@@ -315,7 +315,7 @@ class Test:
 
         context = self.final_func(context)
 
-        if vary == True:
+        if (vary == True and result == True):
             context = self.vary_func(self.step, context)
 
         # Critical section protected by a lock/release mutex mechanism
