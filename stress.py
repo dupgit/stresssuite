@@ -112,6 +112,14 @@ class TestSuite:
         for i in range(max):
             self.testlist[i].print_stats()
 
+    def save_in_gnuplot(self):
+        """Saving things to gnuplot files
+
+        """
+        max = len(self.testlist)
+        for i in range(max):
+            self.testlist[i].save_in_gnuplot()
+
 
     def print_stats_by_name(self, name):
         """Print running statistics
@@ -216,6 +224,15 @@ class Test:
     print_c_func: function that should return a string that resume the
                   context to a maximum of 37 charaters (context changes
                   only a little beetween succesive calls)
+                  Takes 2 arguments : what and context
+                  what is automatic and have 3 values : 'print', 'config' and
+                  'vary' :
+                   - print  : the function must return a 37 max char lenght
+                              string
+                   - config : the function must return a string with the name of
+                              the variable beeing stepped
+                   - vary   : the function must return an integer with the value
+                              of the variable beeing stepped
     times       : list of list of execution times tuples
                   (cpu, real_time, context)
     thread_times: list of execution time tuples for one thread
@@ -247,7 +264,7 @@ class Test:
     def default_vary(self, step, context):
         return None
 
-    def default_print_c(self, context):
+    def default_print_c(self, what, context):
         return 'default context'
 
     def __init__(self, name, desc='', init_func=default_init,          \
@@ -279,6 +296,7 @@ class Test:
         self.ok_to_go = threading.Event()
         self.step = step
         self.result = True
+        self.nb_threads = 0
 
 #    def set_new_context(self, context_list):
 #        self.context_list = context_list
@@ -304,6 +322,11 @@ class Test:
             print("start_test(%d, %s)" % (i, str(vary)))
 
         context = self.init_func(context)
+
+        # Critical section protected by a lock/release mutex mechanism
+        self.lock.acquire()
+        self.nb_threads += 1
+        self.lock.release()
 
         # Wait for the event "start"
         self.ok_to_go.wait()
@@ -345,6 +368,7 @@ class Test:
             nb_threads = len(self.context_list)
             thread_list = []
             self.thread_times = []
+            self.nb_threads = 0
             for i in range(nb_threads):
                 a_thread = threading.Thread(target=self.start_test, \
                                             args=(i, vary))
@@ -354,7 +378,13 @@ class Test:
 
             # Sending the event to really start
             # waiting thata the last thread finishes its init ...
-            time.sleep(1)
+            n = 0
+            while (self.nb_threads != nb_threads and n < 1200):
+                time.sleep(0.1)
+                n +=1
+
+            print('%d - %d - %d' % (self.nb_threads, nb_threads, n))
+
             self.ok_to_go.set()
 
             for i in range(nb_threads):
@@ -406,7 +436,7 @@ class Test:
                     avg_real += real_time
                     cpu_str = '%5.02f' % cpu_time
                     real_str = '%5.04f' % real_time
-                    context_resumed = self.print_c_func(context)
+                    context_resumed = self.print_c_func('print', context)
                     print("%3d.%3d ; %s ; %s ; %s" %(i, j, \
                           cpu_str.rjust(13),          \
                           real_str.rjust(13),        \
@@ -419,6 +449,57 @@ class Test:
             print("")
         else:
             print("%s - No tests has been ran !" % self.name)
+
+    def save_in_gnuplot(self):
+        """Saves statistics on the running session in a gnuplot ready file
+
+        Each running session is timed (cpu and real time). These times
+        are saved along with the context used for the test (in a list
+        of list). This method saves all thoses values into a gnuplot ready
+        file
+        """
+
+        with open('%s.p' % self.name, 'w') as gnuplot:
+
+            gnuplot.write('set terminal png transparent nocrop enhanced small size 1280,960\n')
+
+            nb_tests = len(self.times)
+
+            if nb_tests > 0:
+                nb_threads = len(self.times[0])
+                cpu_time, real_time, context = self.times[0][0]
+                inverse = []
+
+                gnuplot.write('set title "Results for test %s (%d threads)"\n' % (self.name, nb_threads))
+                gnuplot.write('set ylabel "time (in s)"\n')
+                gnuplot.write('set xlabel "%s"\n' % self.print_c_func('config', context))
+                thread_str = 'plot \'-\' title "Thread 0" with lines'
+
+                for i in range(nb_threads-1):
+                    thread_str += ', \'-\' title "Thread ' + str(i+1) + '" with lines'
+                    inverse.append([])
+
+                gnuplot.write(thread_str + '\n')
+                inverse.append([])
+
+                for i in range(nb_tests):
+                    nb_threads = len(self.times[i])
+                    self.thread_times = self.times[i]
+                    for j in range(nb_threads):
+                        cpu_time, real_time, context = self.thread_times[j]
+                        inverse[j].append(self.thread_times[j])
+
+                for j in range(nb_threads):
+                    a_thread = inverse[j]
+                    for i in range(nb_tests):
+                        cpu_time, real_time, context = a_thread[i]
+                        gnuplot.write('%d %f\n' % (self.print_c_func('vary', context), real_time))
+                    gnuplot.write('e\n')
+
+            else:
+                if self.debug == True:
+                    print("%s - No tests has been ran !" % self.name)
+
 
 
     name = ''                      # name for the test

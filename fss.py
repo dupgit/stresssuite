@@ -135,12 +135,17 @@ def fss_tests_vary(step, context):
 # End of fss_tests_vary function
 
 
-def fss_print_c(context):
+def fss_print_c(what, context):
     """Function to resume context to a string with mimimun length"""
 
     path, current_path, nb_tests = context
 
-    return 'Tests : ' + str(nb_tests)
+    if what == 'print':
+        return 'Tests : ' + str(nb_tests)
+    elif what == 'config':
+        return 'Number of files/directories created'
+    elif what == 'vary':
+        return nb_tests
 
 # End of fss_print_c function
 
@@ -346,13 +351,19 @@ def mzfft_vary_file_size(step, context):
 # End of mzfft_vary function
 
 
-def mzfft_print_c(context):
+def mzfft_print_c(what, context):
     """Function to resume context to a string with mimimun length"""
 
     path, current_path, nb_tests, file_buffer, file_size = context
 
-    return 'T : ' + str(nb_tests) + ' ; Bs : ' +  \
-           str(len(file_buffer)) + ' ; Fs: ' + str(file_size)
+    if what == 'print':
+        return 'T : ' + str(nb_tests) + ' ; Bs : ' +  \
+                str(len(file_buffer)) + ' ; Fs: ' + str(file_size)
+    elif what == 'config':
+        return 'File size (creating %d files with a buffer of %d bytes)' % \
+               (nb_tests, len(file_buffer))
+    elif what == 'vary':
+        return file_size
 
 # End of mzfft_print_c function
 

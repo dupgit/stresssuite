@@ -1,3 +1,7 @@
+26.05.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Begining work with the gnuplot stuff
+            * Added --gnuplot option
+
 25.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Added a function to the Test class named print_c_func that may
               be defined whithin the test itself. This function must return a

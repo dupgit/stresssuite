@@ -1,9 +1,9 @@
  . Add new tests on files
  . Add other testsuites (eg to test postgresql for instance)
- . Add a gnuplot file generation with the results
  . trap keyboard interrupts ?
  . convert functions arguments of the __init__ Test class method into a tuple
    containing all the wanted functions
+ . Change the saving directory for the gnuplot files
 
 Done :
 
@@ -27,3 +27,4 @@ Done :
     resume context in a relevant manner with the point of view of the
     time test comparisons. The aim is to get rid of things that are not
     really necessary for the results (when printing)
+  . Add a gnuplot file generation with the results
