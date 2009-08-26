@@ -213,6 +213,9 @@ class Test:
                   execution
     vary_func   : function being used to vary the context between
                   succesive calls
+    print_c_func: function that should return a string that resume the
+                  context to a maximum of 37 charaters (context changes
+                  only a little beetween succesive calls)
     times       : list of list of execution times tuples
                   (cpu, real_time, context)
     thread_times: list of execution time tuples for one thread
@@ -244,11 +247,13 @@ class Test:
     def default_vary(self, step, context):
         return None
 
+    def default_print_c(self, context):
+        return 'default context'
 
-    def __init__(self, name, desc='', init_func=default_init,      \
-                 exec_func=default_test, final_func=default_final, \
-                 vary_func=default_vary, context_list=None,        \
-                 step=2, debug=False):
+    def __init__(self, name, desc='', init_func=default_init,          \
+                 exec_func=default_test, final_func=default_final,     \
+                 vary_func=default_vary, print_c_func=default_print_c, \
+                 context_list=None, step=2, debug=False):
         """Initialises one test
 
         Takes at least one argument which is the name of the test.
@@ -265,6 +270,7 @@ class Test:
         self.init_func = init_func
         self.final_func = final_func
         self.vary_func = vary_func
+        self.print_c_func = print_c_func
         self.context_list = context_list
         self.debug = debug
         self.times = []
@@ -388,9 +394,9 @@ class Test:
             avg_cpu = 0
             avg_real = 0
             print("Results for test '%s'" % self.name)
-            print("%s ; %s ; %s ; %s" % ('Tests'.ljust(8),  \
-                  'CPU   '.rjust(8), 'real time'.rjust(22), \
-                  'context'.rjust(37)))
+            print("%s;%s;%s;%s" % ('Tests'.center(8),  \
+                  'CPU'.center(15), 'real time'.center(15), \
+                  'context'.center(38)))
             for i in range(nb_tests):
                 nb_threads = len(self.times[i])
                 self.thread_times = self.times[i]
@@ -398,41 +404,48 @@ class Test:
                     cpu_time, real_time, context = self.thread_times[j]
                     avg_cpu += cpu_time
                     avg_real += real_time
-                    print("%4d.%3d ; %s ; %s ; %s" %(i, j, \
-                          str(cpu_time).rjust(8),          \
-                          str(real_time).rjust(22),        \
-                          str(context).rjust(37)))
+                    cpu_str = '%5.02f' % cpu_time
+                    real_str = '%5.04f' % real_time
+                    context_resumed = self.print_c_func(context)
+                    print("%3d.%3d ; %s ; %s ; %s" %(i, j, \
+                          cpu_str.rjust(13),          \
+                          real_str.rjust(13),        \
+                          str(context_resumed).rjust(37)))
 
+            avg_cpu_str = '%5.04f' % (avg_cpu/(nb_tests * nb_threads))
+            avg_real_str = '%5.04f' % (avg_real/(nb_tests * nb_threads))
             print("Averages : %s ; %s (over %d tests of %d threads)" %                            \
-                  (str(avg_cpu/(nb_tests * nb_threads)),               \
-                  str(avg_real/(nb_tests * nb_threads)),               \
-                  i + 1, j + 1))
+                  (avg_cpu_str, avg_real_str, i + 1, j + 1))
             print("")
         else:
             print("%s - No tests has been ran !" % self.name)
 
 
-    name = ''                   # name for the test
-    description = ''            # description for the test
-    context_list = None         # execution context list
-    init_func = default_init    # function being called at init time
-                                # before test execution
-    exec_func = default_test    # function being executed by the test
-    final_func = default_final  # function being called at the end of
-                                # the test execution
-    vary_func = default_vary    # function being used to vary the
-                                # context between succesive calls
-    times = []                  # execution times tuples
-                                # (cpu, real_time, context)
-    debug = False               # debug mode on = True ; off = False
-    thread_times = []           # list of execution timles for one
-                                # thread
-    lock = None                 # lock to manage a critical section in
-                                # the threads
-    ok_to_go = None             # A specific signal send to the threads
-                                # in order that they all begin at the
-                                # same time (more or less)
-    step = 2                    # A step for the vary function
+    name = ''                      # name for the test
+    description = ''               # description for the test
+    context_list = None            # execution context list
+    init_func = default_init       # function being called at init time
+                                   # before test execution
+    exec_func = default_test       # function being executed by the test
+    final_func = default_final     # function being called at the end of
+                                   # the test execution
+    vary_func = default_vary       # function being used to vary the
+                                   # context between succesive calls
+    print_c_func = default_print_c # function that must resume the
+                                   # context into a maximum of 37
+                                   # printable characters
+    times = []                     # execution times tuples
+                                   # (cpu, real_time, context)
+    debug = False                  # debug mode on = True ; off = False
+    thread_times = []              # list of execution timles for one
+                                   # thread
+    lock = None                    # lock to manage a critical section
+                                   # in the threads
+    ok_to_go = None                # A specific signal send to the
+                                   # threads in order that they all
+                                   # begin at the same time (more or
+                                   # less)
+    step = 2                       # A step for the vary function
 
 # End for Class Test
 

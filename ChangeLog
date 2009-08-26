@@ -1,3 +1,10 @@
+25.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Added a function to the Test class named print_c_func that may
+              be defined whithin the test itself. This function must return a
+              string that resumes the context. It is used in the print_stats
+              function (not in debug mode)
+            * Printing stats is now more fancier
+
 24.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * New file test : Zero Filed Files Creation
               New option : --buffer-size that let one specify a buffer size

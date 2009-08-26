@@ -1,13 +1,9 @@
  . Add new tests on files
  . Add other testsuites (eg to test postgresql for instance)
  . Add a gnuplot file generation with the results
- . Add a new Test function (relevant_context for instance) that will
-   be written for the test and that will return something that will
-   resume context in a relevant manner with the point of view of the
-   time test comparisons. The aim is to get rid of things that are not
-   really necessary for the results (when printing)
  . trap keyboard interrupts ?
-
+ . convert functions arguments of the __init__ Test class method into a tuple
+   containing all the wanted functions
 
 Done :
 
@@ -26,3 +22,8 @@ Done :
     testing this particular test -> each test should take care of this
     and modify it's context in order not to continue the test (even if
     called)
+  . Add a new Test function (relevant_context for instance) that will
+    be written for the test and that will return something that will
+    resume context in a relevant manner with the point of view of the
+    time test comparisons. The aim is to get rid of things that are not
+    really necessary for the results (when printing)

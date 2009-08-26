@@ -135,6 +135,15 @@ def fss_tests_vary(step, context):
 # End of fss_tests_vary function
 
 
+def fss_print_c(context):
+    """Function to resume context to a string with mimimun length"""
+
+    path, current_path, nb_tests = context
+
+    return 'Tests : ' + str(nb_tests)
+
+# End of fss_print_c function
+
 def clean_directory(context):
     """Removes all created files or directories (if any) from the
     FileSystem tests.
@@ -337,6 +346,17 @@ def mzfft_vary_file_size(step, context):
 # End of mzfft_vary function
 
 
+def mzfft_print_c(context):
+    """Function to resume context to a string with mimimun length"""
+
+    path, current_path, nb_tests, file_buffer, file_size = context
+
+    return 'T : ' + str(nb_tests) + ' ; Bs : ' +  \
+           str(len(file_buffer)) + ' ; Fs: ' + str(file_size)
+
+# End of mzfft_print_c function
+
+
 def mzfft_make_context_list(basepath, current_path, nb_tests, file_buffer, \
                             file_size, nb_threads):
     """Make a context list for the FileSystem test suite"""
@@ -395,18 +415,18 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
 # Test 0 : Directories Creation
     dir_context = fss_make_context_list(basepath, '', 100, nb_threads)
-    how_many_directories = stress.Test('Directory creation',         \
-      'Creates directories in one single directory', fss_tests_init, \
-      make_directory_test, fss_tests_final, fss_tests_vary,          \
+    how_many_directories = stress.Test('Directory creation',             \
+      'Creates directories in one single directory', fss_tests_init,     \
+      make_directory_test, fss_tests_final, fss_tests_vary, fss_print_c, \
       dir_context, step, debug)
 
     stressfs.add_test(how_many_directories)
 
 # Test 1 : Files Creation
     file_context = fss_make_context_list(basepath, '', 512, nb_threads)
-    how_many_files = stress.Test('Files creation',              \
-      'Creates files in one single directory', fss_tests_init,  \
-      make_files_test, fss_tests_final, fss_tests_vary,         \
+    how_many_files = stress.Test('Files creation',                   \
+      'Creates files in one single directory', fss_tests_init,       \
+      make_files_test, fss_tests_final, fss_tests_vary, fss_print_c, \
       file_context, step, debug)
 
     stressfs.add_test(how_many_files)
@@ -414,12 +434,12 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 # Test 2 : Zero Filed Files Creation (file_size variation)
     a_buffer = make_buffer(debug, buffer_size)
     if len(a_buffer) > 0 :
-        mzfft_context = mzfft_make_context_list(basepath, '', 512, a_buffer,   \
+        mzfft_context = mzfft_make_context_list(basepath, '', 2048, a_buffer,   \
                                                 512, nb_threads)
         mzfft = stress.Test('Zero filed files creation',
         'Creates zero filed files (sile size vary - buffer size is an option)',\
         mzfft_init, make_zero_filed_files_test, mzfft_final,                   \
-        mzfft_vary_file_size, mzfft_context, step, debug)
+        mzfft_vary_file_size, mzfft_print_c, mzfft_context, step, debug)
 
         stressfs.add_test(mzfft)
     elif debug == True:
