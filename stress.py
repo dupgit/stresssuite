@@ -383,7 +383,8 @@ class Test:
                 time.sleep(0.1)
                 n +=1
 
-            print('%d - %d - %d' % (self.nb_threads, nb_threads, n))
+            if self.debug == True:
+                print('%d - %d - %d' % (self.nb_threads, nb_threads, n))
 
             self.ok_to_go.set()
 
@@ -459,7 +460,8 @@ class Test:
         file
         """
 
-        with open('%s.p' % self.name, 'w') as gnuplot:
+        try:
+            gnuplot = open('%s.p' % self.name, 'w')
 
             gnuplot.write('set terminal png transparent nocrop enhanced small size 1280,960\n')
 
@@ -499,6 +501,10 @@ class Test:
             else:
                 if self.debug == True:
                     print("%s - No tests has been ran !" % self.name)
+        except:
+            if self.debug == True:
+                print('Something went wrong while trying to open %s.p file' %
+                       self.name)
 
 
 

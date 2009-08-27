@@ -258,8 +258,8 @@ def usage():
 
   EXAMPLE
       ./stresssuite.py -d -p /home/dup/tmp -m 10
-      ./stresssuite.py -d -p /home/dup/tmp/stressfs --testsuite='Files'\
-        --m 4 -s 10 --threads=5
+      ./stresssuite.py -d -p /home/dup/tmp/stressfs --testsuite='Files' \\
+        -m 4 -s 10 --threads=5
       ./stresssuite.py --list
 
   """)

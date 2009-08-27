@@ -386,7 +386,7 @@ def mzfft_make_context_list(basepath, current_path, nb_tests, file_buffer, \
 def make_buffer(debug, buffer_size):
     """ Creates a buffer of buffer_size len"""
 
-    a_buffer = b''
+    a_buffer = '' # b''
 
     try:
         for i in range(buffer_size):
