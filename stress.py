@@ -112,13 +112,13 @@ class TestSuite:
         for i in range(max):
             self.testlist[i].print_stats()
 
-    def save_in_gnuplot(self):
+    def save_in_gnuplot(self, path):
         """Saving things to gnuplot files
 
         """
         max = len(self.testlist)
         for i in range(max):
-            self.testlist[i].save_in_gnuplot()
+            self.testlist[i].save_in_gnuplot(path)
 
 
     def print_stats_by_name(self, name):
@@ -428,6 +428,7 @@ class Test:
             print("%s;%s;%s;%s" % ('Tests'.center(8),  \
                   'CPU'.center(15), 'real time'.center(15), \
                   'context'.center(38)))
+
             for i in range(nb_tests):
                 nb_threads = len(self.times[i])
                 self.thread_times = self.times[i]
@@ -451,7 +452,8 @@ class Test:
         else:
             print("%s - No tests has been ran !" % self.name)
 
-    def save_in_gnuplot(self):
+
+    def save_in_gnuplot(self, path):
         """Saves statistics on the running session in a gnuplot ready file
 
         Each running session is timed (cpu and real time). These times
@@ -460,25 +462,38 @@ class Test:
         file
         """
 
-        try:
-            gnuplot = open('%s.p' % self.name, 'w')
+        if os.path.exists(path):
+            file_name = '%s/%s.p' % (path, self.name)
+        else:
+            try:
+                os.makedirs(path)
+                file_name = '%s/%s.p' % (path, self.name)
+            except:
+                if self.debug == True:
+                    print('Error while trying to make path %s' % path)
+                return None
 
-            gnuplot.write('set terminal png transparent nocrop enhanced small size 1280,960\n')
+        try:
+            gnuplot = open(file_name, 'w')
+            gnuplot.write('set terminal png transparent nocrop enhanced small \
+size 1280,960\n')
 
             nb_tests = len(self.times)
-
             if nb_tests > 0:
                 nb_threads = len(self.times[0])
                 cpu_time, real_time, context = self.times[0][0]
                 inverse = []
 
-                gnuplot.write('set title "Results for test %s (%d threads)"\n' % (self.name, nb_threads))
+                gnuplot.write('set title "Results for test %s (%d threads)"\n' \
+                               % (self.name, nb_threads))
                 gnuplot.write('set ylabel "time (in s)"\n')
-                gnuplot.write('set xlabel "%s"\n' % self.print_c_func('config', context))
+                gnuplot.write('set xlabel "%s"\n' % \
+                              self.print_c_func('config', context))
                 thread_str = 'plot \'-\' title "Thread 0" with lines'
 
                 for i in range(nb_threads-1):
-                    thread_str += ', \'-\' title "Thread ' + str(i+1) + '" with lines'
+                    thread_str += ', \'-\' title "Thread ' + str(i+1) + \
+                                  '" with lines'
                     inverse.append([])
 
                 gnuplot.write(thread_str + '\n')
@@ -495,7 +510,9 @@ class Test:
                     a_thread = inverse[j]
                     for i in range(nb_tests):
                         cpu_time, real_time, context = a_thread[i]
-                        gnuplot.write('%d %f\n' % (self.print_c_func('vary', context), real_time))
+                        gnuplot.write('%d %f\n' %                         \
+                                     (self.print_c_func('vary', context), \
+                                     real_time))
                     gnuplot.write('e\n')
 
             else:
@@ -503,10 +520,8 @@ class Test:
                     print("%s - No tests has been ran !" % self.name)
         except:
             if self.debug == True:
-                print('Something went wrong while trying to open %s.p file' %
-                       self.name)
-
-
+                print('Something went wrong while trying to open %s file' %
+                       file_name)
 
     name = ''                      # name for the test
     description = ''               # description for the test

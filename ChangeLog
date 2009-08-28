@@ -1,3 +1,7 @@
+27.05.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Added an argument to the --gnuplot option to indicate the path
+              where we want gnuplot generated files to be saved
+
 26.05.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Begining work with the gnuplot stuff
             * Added --gnuplot option

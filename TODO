@@ -3,7 +3,8 @@
  . trap keyboard interrupts ?
  . convert functions arguments of the __init__ Test class method into a tuple
    containing all the wanted functions
- . Change the saving directory for the gnuplot files
+ . May be transform step into a list of steps ? If so, we also need to modify
+   gnuplot generation and print_c_func (and may be print_stats)
 
 Done :
 
@@ -28,3 +29,4 @@ Done :
     time test comparisons. The aim is to get rid of things that are not
     really necessary for the results (when printing)
   . Add a gnuplot file generation with the results
+  . Change the saving directory for the gnuplot files

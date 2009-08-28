@@ -140,11 +140,11 @@ class Collection:
             self.suite_list[i].print_stats()
 
 
-    def save_in_gnuplot(self):
+    def save_in_gnuplot(self, path):
         """Saves results in gnplot files"""
         max = len(self.suite_list)
         for i in range(max):
-            self.suite_list[i].save_in_gnuplot()
+            self.suite_list[i].save_in_gnuplot(path)
 
     def set_debug_mode(self, debug):
         """Sets debug mode for everyone"""
@@ -166,7 +166,8 @@ class Options:
     list        : boolean, says wether to list the tests or not
     testname    : string, name of one test
     testsuite   : string, name of one test suite
-    gnuplot     : boolean, says wether to save to gnuplot formated files or not
+    gnuplot     : string, if set, generates gnuplot ready files at the location
+                  indicated by the thread
     """
     runs = 0
     print_stats = True
@@ -178,7 +179,7 @@ class Options:
     nb_threads = 1
     step = 2
     buffer_size = 512
-    gnuplot = False
+    gnuplot = ''
 
     def __init__(self):
         self.runs = 0
@@ -191,7 +192,7 @@ class Options:
         self.nb_threads = 1
         self.step = 2
         self.buffer_size = 512
-        self.gnuplot = False
+        self.gnuplot = ''
 
 # Help message for main program
 def usage():
@@ -226,8 +227,9 @@ def usage():
       -n, --no-stats
         Does not print any stats at the end of the tests
 
-      --gnuplot
-        Export results (stats) to gnuplot formated files
+      --gnuplot=PATH
+        Export results (stats) to gnuplot formated files. PATH indicates
+        the path where files might be created
 
       -m NUM, --multiple=NUM
         Tell to run the tests exactly NUM times
@@ -290,7 +292,7 @@ def parse_command_line(my_opts):
     short_options = "hlondm:p:s:"
     long_options = ["help", "list", "once", "no-stats", "debug",     \
                     "multiple=", 'testname=', 'testsuite=', 'path=', \
-                    'threads=', 'step=', 'buffer-size=', 'gnuplot']
+                    'threads=', 'step=', 'buffer-size=', 'gnuplot=']
 
     # Read options and arguments
     try:
@@ -332,7 +334,7 @@ def parse_command_line(my_opts):
         elif opt in ('--buffer-size'):
             my_opts.buffer_size = transform_to_int(opt, arg)
         elif opt in ('--gnuplot'):
-            my_opts.gnuplot = True
+            my_opts.gnuplot = arg
 
     return my_opts
 # End function parse_command_line()
@@ -389,8 +391,8 @@ def main():
             if my_opts.print_stats == True:
                 a_test.print_stats()
 
-            if my_opts.gnuplot == True:
-                a_test.save_in_gnuplot()
+            if my_opts.gnuplot != '':
+                a_test.save_in_gnuplot(my_opts.gnuplot)
 
     elif my_opts.testsuite != '':
         if my_opts.debug == True:
@@ -404,8 +406,8 @@ def main():
             if my_opts.print_stats == True:
                 a_testsuite.print_stats()
 
-            if my_opts.gnuplot == True:
-                a_testsuite.save_in_gnuplot()
+            if my_opts.gnuplot != '':
+                a_testsuite.save_in_gnuplot(my_opts.gnuplot)
 
     else:
         collec.run_all_stress_suites_vary(my_opts.runs)
@@ -414,8 +416,8 @@ def main():
         if my_opts.print_stats == True:
             collec.print_stats()
 
-        if my_opts.gnuplot == True:
-            collec.save_in_gnuplot()
+        if my_opts.gnuplot != '':
+            collec.save_in_gnuplot(my_opts.gnuplot)
 
 # End of main function
 
