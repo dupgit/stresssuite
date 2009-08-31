@@ -518,10 +518,15 @@ size 1280,960\n')
             else:
                 if self.debug == True:
                     print("%s - No tests has been ran !" % self.name)
+
+                return None
+
         except:
             if self.debug == True:
                 print('Something went wrong while trying to open %s file' %
                        file_name)
+
+            return None
 
     name = ''                      # name for the test
     description = ''               # description for the test

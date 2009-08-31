@@ -1,8 +1,14 @@
-27.05.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+31.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Added a testcases.py file that will run each testcases of each
+              module. This file is based on test_doc.py from the hachoir project
+              thanks to Victor Stinner
+            * Added doctests (mainly to fss tests)
+
+27.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Added an argument to the --gnuplot option to indicate the path
               where we want gnuplot generated files to be saved
 
-26.05.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+26.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Begining work with the gnuplot stuff
             * Added --gnuplot option
 

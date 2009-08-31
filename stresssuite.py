@@ -146,6 +146,7 @@ class Collection:
         for i in range(max):
             self.suite_list[i].save_in_gnuplot(path)
 
+
     def set_debug_mode(self, debug):
         """Sets debug mode for everyone"""
 
@@ -269,7 +270,11 @@ def usage():
 
 def transform_to_int(opt, arg):
     """transform 'arg' argument from the command line to an int where
-    possible"""
+    possible
+
+    >>> transform_to_int('', '2')
+    2
+    """
 
     try :
         arg = int(arg)
