@@ -1,10 +1,10 @@
  . Add new tests on files
  . Add other testsuites (eg to test postgresql for instance)
+ . Add testcases and may see how to do coverage tests
  . trap keyboard interrupts ?
- . convert functions arguments of the __init__ Test class method into a tuple
-   containing all the wanted functions
  . May be transform step into a list of steps ? If so, we also need to modify
    gnuplot generation and print_c_func (and may be print_stats)
+
 
 Done :
 
@@ -30,3 +30,5 @@ Done :
     really necessary for the results (when printing)
   . Add a gnuplot file generation with the results
   . Change the saving directory for the gnuplot files
+  . Convert functions arguments of the __init__ Test class method into a tuple
+    containing all the wanted functions

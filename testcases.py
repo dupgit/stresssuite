@@ -21,9 +21,9 @@
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 
-# This file is heavyly based on test_doc.py that you might found in the
+# This file is heavyly based on test_doc.py that you will found in the
 # hachoir project thanks to Victor Stinner
-#
+
 
 import os
 import sys
@@ -50,7 +50,8 @@ def testModule(name):
     flags = doctest.REPORT_UDIFF
     failure, nb_test = doctest.testmod(module, optionflags=flags)
 
-    print('--- End of test for module "%s" (%d passed and %d failed)' % (name, nb_test, failure))
+    print('--- End of test for module "%s" (%d passed and %d failed)' % \
+         (name, nb_test, failure))
 
     if failure:
         sys.exit(1)

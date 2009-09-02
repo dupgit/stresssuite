@@ -21,8 +21,6 @@
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 
-#  $Id: $
-
 """Program used to manage stress suites.
 
 It contains a FileSystem Stress Suite (fss module).

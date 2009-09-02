@@ -1,3 +1,12 @@
+01.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Change the way to call the __init__ function for Test creation :
+              Now you must provide a tuple which must contain all the functions
+              for the test : an init function, the test itself, a final function
+              used to clean or finish the test, a vary function used to vary the
+              variable part of the test (if any) and a print context function
+              that is used to print the context with various formats (see the
+              docstring of that function to know more about it).
+
 31.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Added a testcases.py file that will run each testcases of each
               module. This file is based on test_doc.py from the hachoir project

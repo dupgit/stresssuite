@@ -21,8 +21,6 @@
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 
-# $Id: $
-
 """ module providing tools in order to do stress tests
 
 Class TestSuite : a collection of tests
@@ -267,19 +265,24 @@ class Test:
     def default_print_c(self, what, context):
         return 'default context'
 
-    def __init__(self, name, desc='', init_func=default_init,          \
-                 exec_func=default_test, final_func=default_final,     \
-                 vary_func=default_vary, print_c_func=default_print_c, \
+    def __init__(self, name, desc='', functions=(default_init, default_test, \
+                 default_final, default_vary, default_print_c), \
                  context_list=None, step=2, debug=False):
         """Initialises one test
 
-        Takes at least one argument which is the name of the test.
-        You may also provide (in that order), a description for the test
-        as a string, an init function, a test function, a final
-        function, a vary function and a context for the test. At last
-        you can use a boolean to tell if you want a verbose mode (debug
+        Takes as first argument which is the name of the test, a second one
+        which is the description for the test.
+        'functions' is a tuple of functions that you must provide (in that
+        order), an init function, a test function, a final function, a vary
+        function and print_context function.
+        context_list is a list of contexts to be used by the tests. The number
+        of elements will determine the number of threads to execute. Step is a
+        number that will be used to increment some variable in the test. At
+        last you can use a boolean to tell if you want a verbose mode (debug
         mode - False by default )
         """
+
+        init_func, exec_func, final_func, vary_func, print_c_func = functions
 
         self.name = name
         self.description = desc
