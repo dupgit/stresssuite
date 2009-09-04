@@ -197,10 +197,10 @@ class Options:
 def usage():
   print("""
   NAME
-      stress-suite
+      stresssuite
 
   SYNOPSIS
-      stress-suite [OPTIONS]...
+      stresssuite [OPTIONS]...
 
   DESCRIPTION
       Runs File related TestSuites
@@ -292,6 +292,9 @@ def transform_to_int(opt, arg):
 
 
 def parse_command_line(my_opts):
+    """Parses command line's options and arguments
+    """
+
     short_options = "hlondm:p:s:"
     long_options = ["help", "list", "once", "no-stats", "debug",     \
                     "multiple=", 'testname=', 'testsuite=', 'path=', \

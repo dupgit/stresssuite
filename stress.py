@@ -449,7 +449,7 @@ class Test:
 
             avg_cpu_str = '%5.04f' % (avg_cpu/(nb_tests * nb_threads))
             avg_real_str = '%5.04f' % (avg_real/(nb_tests * nb_threads))
-            print("Averages : %s ; %s (over %d tests of %d threads)" %                            \
+            print("Averages : %s ; %s (over %d tests of %d threads)" %        \
                   (avg_cpu_str, avg_real_str, i + 1, j + 1))
             print("")
         else:
