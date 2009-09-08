@@ -4,7 +4,8 @@
  . trap keyboard interrupts ?
  . May be transform step into a list of steps ? If so, we also need to modify
    gnuplot generation and print_c_func (and may be print_stats)
-
+ . Change file names saved with gnuplot export and add number of threads and
+   context description
 
 Done :
 

@@ -1,4 +1,8 @@
-01.08.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+08.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Closing the gnuplot file
+            * Added a TODO and corrected a typo in Changelog
+
+01.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Change the way to call the __init__ function for Test creation :
               Now you must provide a tuple which must contain all the functions
               for the test : an init function, the test itself, a final function

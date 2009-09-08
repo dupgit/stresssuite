@@ -518,6 +518,8 @@ size 1280,960\n')
                                      real_time))
                     gnuplot.write('e\n')
 
+                gnuplot.close()
+
             else:
                 if self.debug == True:
                     print("%s - No tests has been ran !" % self.name)
