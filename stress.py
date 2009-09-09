@@ -62,6 +62,7 @@ class TestSuite:
         """
         self.name = name
         self.description = desc
+        self.testlist = []
 
 
     def add_test(self, test):

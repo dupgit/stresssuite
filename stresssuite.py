@@ -39,6 +39,7 @@ import getopt
 
 import stress
 import fss
+import cpu_stress
 
 
 class Collection:
@@ -126,7 +127,8 @@ class Collection:
 
         max = len(self.suite_list)
         for i in range(max):
-            self.suite_list[i].list_tests()
+            stresssuite = self.suite_list[i]
+            stresssuite.list_tests()
 
 
     def print_stats(self):
@@ -356,7 +358,11 @@ def init_all_tests(collec, base_path, nb_threads, step, debug, buffer_size):
 
     stressfs = fss.FileSystem_Tests(base_path, nb_threads, step, debug, \
                                     buffer_size)
+
+    stresscpu = cpu_stress.Cpu_Tests(nb_threads, step, debug)
+
     collec.add_suite(stressfs)
+    collec.add_suite(stresscpu)
 
     return collec
 # End of function init_all_tests()
