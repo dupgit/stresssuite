@@ -381,16 +381,16 @@ def main():
                             my_opts.debug, my_opts.buffer_size)
 
     if my_opts.debug == True:
-       print("Debug mode is on")
+       print('Debug mode is on')
        print("BasePath is '%s'" % my_opts.base_path)
        collec.set_debug_mode(True)
+       print('Runs : %d' % my_opts.runs)
 
     if my_opts.list == True:
         collec.list_all_suites()
         sys.exit(0)
 
     # Running the tests
-
     if my_opts.testname != '':
         if my_opts.debug == True:
             print("Selected testname is : %s" % my_opts.testname)

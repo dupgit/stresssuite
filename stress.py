@@ -407,6 +407,10 @@ class Test:
         """Start a vary test nb_times times"""
 
         for i in range(nb_times):
+
+            if self.debug == True:
+                print('Run number %d / %d :' % (i+1, nb_times))
+
             if self.result == True:
                 if i == (nb_times - 1):
                     self.start_once(False)

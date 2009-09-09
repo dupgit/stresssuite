@@ -51,6 +51,8 @@ def cpu_encode_stress_test(context):
 
     context = a_string, nb_tests
 
+    return True
+
 # End of cpu_hash_stress_test() function
 
 
@@ -100,7 +102,7 @@ def cpu_est_print_c(what, context):
     if what == 'print':
         return 'Tests : ' + str(nb_tests)
     elif what == 'config':
-        return 'Number of sha512 calls'
+        return 'Number of runs'
     elif what == 'vary':
         return nb_tests
 
@@ -136,7 +138,7 @@ def Cpu_Tests(nb_threads, step, debug):
     order to do some cpu cycles to load it a bit. It is not supposed to consume
     memory. If one sees a bug, please report to the author or maintainer"""
 
-    nb_tests = 2000000L
+    nb_tests = 20000L
 
     cpu_est_context_list = make_cpu_est_context_list(nb_threads, a_string, \
                                                      nb_tests)
