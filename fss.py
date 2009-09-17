@@ -47,12 +47,12 @@ def make_directory_test(context):
     executing the test
 
     >>> make_directory_test(('', '', 3))
-    False
+    (False, ('', '', 3))
 
 
     >>> context = fss_tests_init(('/tmp/fss', '~/', 3))
     >>> make_directory_test(('/tmp/fss', '~/', 3))
-    True
+    (True, ('/tmp/fss', '~/', 3))
     >>> clean_directory(('/tmp/fss', '', 3))
     ('/tmp/fss', '', 3)
 
@@ -76,12 +76,12 @@ def make_directory_test(context):
               % first_err)
         nb_tests = first_err
         context = path, current_path, nb_tests
-        return False
+        return (False, context)
     else:
         if i == 0:
-            return False
+            return (False, context)
         else:
-            return True
+            return (True, context)
 
 # End of make_directory_test function
 
@@ -225,12 +225,12 @@ def make_files_test(context):
     . a number that indicates how many files we want to create
 
     >>> make_files_test(('', '', 3))
-    False
+    (False, ('', '', 3))
 
     ... fss_tests_init(('/tmp/fss', '~/', 3))
     >>> make_files_test(('/tmp/fss', '~/', 3))
     ... clean_directory(('/tmp/fss', '', 3))
-    True
+    (True, ('/tmp/fss', '~/', 3))
 
     """
     path, current_path, nb_tests = context
@@ -253,12 +253,12 @@ def make_files_test(context):
               % first_err)
         nb_tests = first_err
         context = path, current_path, nb_tests
-        return False
+        return (False, context)
     else:
         if (i == 0):
-            return False
+            return (False, context)
         else :
-            return True
+            return (True, context)
 
 # End of make_files_test function
 
@@ -305,10 +305,10 @@ def make_zero_filed_files_test(context):
     >>> context = mzfft_init(('/tmp/mzfft', '', 3, '    ', 512))
     >>> make_zero_filed_files_test(('/tmp/mzfft', '', 3, '    ', 512))
     ... clean_directory(('/tmp/mzfft', '', 3))
-    True
+    (True, ('/tmp/mzfft', '', 3, '    ', 512))
 
     >>> make_zero_filed_files_test(('', '', 3, '    ', 512))
-    False
+    (False, ('', '', 3, '    ', 512))
 
     """
     path, current_path, nb_tests, file_buffer, file_size = context
@@ -342,12 +342,12 @@ def make_zero_filed_files_test(context):
               % first_err)
         nb_tests = first_err
         context = path, current_path, nb_tests, file_buffer, file_size
-        return False
+        return (False, context)
     else:
         if i == 0:
-            return False
+            return (False, context)
         else:
-            return True
+            return (True, context)
 
 # End  of make_zero_filed_files_test function
 
@@ -536,7 +536,7 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs = stress.TestSuite('Files', 'Files related tests')
 
-# Test 0 : Directories Creation
+    # Test 0 : Directories Creation
     dir_context = fss_make_context_list(basepath, '', 100, nb_threads)
 
     dir_funcs = fss_tests_init, make_directory_test, fss_tests_final, \
@@ -548,7 +548,7 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs.add_test(how_many_directories)
 
-# Test 1 : Files Creation
+    # Test 1 : Files Creation
     file_context = fss_make_context_list(basepath, '', 512, nb_threads)
 
     file_funcs = fss_tests_init, make_files_test, fss_tests_final, \
@@ -560,7 +560,7 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs.add_test(how_many_files)
 
-# Test 2 : Zero Filed Files Creation (file_size variation)
+    # Test 2 : Zero Filed Files Creation (file_size variation)
     a_buffer = make_buffer(debug, buffer_size)
 
     if len(a_buffer) > 0 :

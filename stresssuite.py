@@ -68,10 +68,9 @@ class Collection:
         Returns the named stress suite or None
         """
 
-        max = len(self.suite_list)
-        for i in range(max):
-            if self.suite_list[i].name == name:
-                return self.suite_list[i]
+        for a_suite in self.suite_list:
+            if a_suite.name == name:
+                return a_suite
 
         if self.debug == True:
             print("TestSuite with name '%s' was not found !" % name)
@@ -85,13 +84,12 @@ class Collection:
         If one or more test have the same name, only the first one is
         returned. None is return if no test has been found.
         """
-        max = len(self.suite_list)
-        for i in range(max):
-            testlist = self.suite_list[i].testlist
-            testmax = len(testlist)
-            for j in range(testmax):
-                if testlist[j].name == name:
-                    return testlist[j]
+
+        for a_suite in self.suite_list:
+            testlist = a_suite.testlist
+            for a_test in testlist:
+                if a_test.name == name:
+                    return a_test
 
         if self.debug == True:
             print("Test with name '%s' was not found !" % name)
@@ -117,43 +115,39 @@ class Collection:
     def run_all_stress_suites_vary(self, nb_times=1):
         """Runs all stress tests from all tests suites"""
 
-        max = len(self.suite_list)
-        for i in range(max):
-            self.suite_list[i].run_test_suite_once_vary(nb_times)
+        for a_suite in self.suite_list:
+            a_suite.run_test_suite_once_vary(nb_times)
 
 
     def list_all_suites(self):
         """Lists all suites and tests available in the collection"""
 
-        max = len(self.suite_list)
-        for i in range(max):
-            stresssuite = self.suite_list[i]
-            stresssuite.list_tests()
+        for a_suite in self.suite_list:
+            a_suite.list_tests()
 
 
     def print_stats(self):
         """Prints all stats for all tests in all tests suites of this
         Collection"""
 
-        max = len(self.suite_list)
-        for i in range(max):
-            self.suite_list[i].print_stats()
+        for a_suite in self.suite_list:
+            a_suite.print_stats()
 
 
     def save_in_gnuplot(self, path):
         """Saves results in gnplot files"""
-        max = len(self.suite_list)
-        for i in range(max):
-            self.suite_list[i].save_in_gnuplot(path)
+
+        for a_suite in self.suite_list:
+            a_suite.save_in_gnuplot(path)
 
 
     def set_debug_mode(self, debug):
         """Sets debug mode for everyone"""
 
         self.debug = debug
-        max = len(self.suite_list)
-        for i in range(max):
-            self.suite_list[i].set_debug_mode(debug)
+
+        for a_suite in self.suite_list:
+            a_suite.set_debug_mode(debug)
 
 # End of Class Collection
 

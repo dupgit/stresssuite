@@ -51,9 +51,9 @@ def cpu_encode_stress_test(context):
 
     context = a_string, nb_tests
 
-    return True
+    return (True, context)
 
-# End of cpu_hash_stress_test() function
+# End of cpu_encode_stress_test() function
 
 
 def cpu_est_init(context):
@@ -64,7 +64,7 @@ def cpu_est_init(context):
 
     return context
 
-# End of cpu_hst_init() function
+# End of cpu_est_init() function
 
 
 def cpu_est_final(context):
@@ -75,7 +75,7 @@ def cpu_est_final(context):
 
     return context
 
-# End of cpu_hst_final() function
+# End of cpu_est_final() function
 
 
 def cpu_est_vary(step, context):
@@ -90,7 +90,7 @@ def cpu_est_vary(step, context):
 
     return context
 
-# End of cpu_hst_vary() function
+# End of cpu_est_vary() function
 
 
 def cpu_est_print_c(what, context):
@@ -106,7 +106,7 @@ def cpu_est_print_c(what, context):
     elif what == 'vary':
         return nb_tests
 
-# End of cpu_hst_print_c() function
+# End of cpu_est_print_c() function
 
 
 def make_cpu_est_context_list(nb_threads, a_string, nb_tests):
@@ -120,7 +120,8 @@ def make_cpu_est_context_list(nb_threads, a_string, nb_tests):
         context_list.append(a_context)
 
     return context_list
-#
+
+# End of make_cpu_est_context_list() function
 
 
 def Cpu_Tests(nb_threads, step, debug):
@@ -130,7 +131,7 @@ def Cpu_Tests(nb_threads, step, debug):
     stresscpu = stress.TestSuite('CPU', 'Cpu related tests')
 
 
-# Cpu Hash Stress Test
+    # Cpu Encode Stress Test
     cpu_est_funcs = cpu_est_init, cpu_encode_stress_test, cpu_est_final, \
                     cpu_est_vary, cpu_est_print_c
 

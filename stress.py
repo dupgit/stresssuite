@@ -79,10 +79,9 @@ class TestSuite:
 
         Each test in the TestSuite is run only once
         """
-        max = len(self.testlist)
-        for i in range(max) :
-            test = self.testlist[i]
-            test.start_once()
+
+        for a_test in self.testlist:
+            a_test.start_once()
 
 
     def run_test_suite_once_vary(self, nb_times):
@@ -94,10 +93,9 @@ class TestSuite:
         change in the Test context. The whole TestSuite itself is run
         only once.
         """
-        max = len(self.testlist)
-        for i in range(max):
-            test = self.testlist[i]
-            test.start_vary(nb_times)
+
+        for a_test in self.testlist:
+            a_test.start_vary(nb_times)
 
 
     def print_stats(self):
@@ -107,17 +105,18 @@ class TestSuite:
         for each test of the TestSuite
         """
         print("Results for TestSuite '%s'" % self.name)
-        max = len(self.testlist)
-        for i in range(max):
-            self.testlist[i].print_stats()
+
+        for a_test in self.testlist:
+            a_test.print_stats()
+
 
     def save_in_gnuplot(self, path):
         """Saving things to gnuplot files
 
         """
-        max = len(self.testlist)
-        for i in range(max):
-            self.testlist[i].save_in_gnuplot(path)
+
+        for a_test in self.testlist:
+            a_test.save_in_gnuplot(path)
 
 
     def print_stats_by_name(self, name):
@@ -142,10 +141,11 @@ class TestSuite:
 
         print("Setting debug mode for all tests for testsuite '%s'" % \
               self.name)
-        max = len(self.testlist)
-        for i in range(max):
-            print(" - test : %s" % self.testlist[i].name)
-            self.testlist[i].debug = debug
+
+        for a_test in self.testlist:
+            print(" - test : %s" % a_test.name)
+            a_test.debug = debug
+
         print("")
 
 
@@ -158,11 +158,12 @@ class TestSuite:
 
         print("Test list for TestSuite '%s' (%s) " %  \
              (self.name, self.description))
-        max = len(self.testlist)
-        for i in range(max):
-            print "%03d : '%s' : %s " % \
-                  (i, self.testlist[i].name,   \
-                  str(self.testlist[i].description))
+
+        i = 0
+        for a_test in self.testlist:
+            print("%03d : '%s' : %s " % (i, a_test.name, a_test.description))
+            i += 1
+
         print("")
 
 
@@ -172,10 +173,10 @@ class TestSuite:
         If two or more tests have the same name, the first one is
         returned. None is returned if no test is found.
         """
-        max = len(self.testlist)
-        for i in range(max):
-            if self.testlist[i].name == name :
-                return self.testlist[i]
+
+        for a_test in self.testlist:
+            if a_test.name == name:
+                return a_test
 
         return None
 
@@ -187,6 +188,7 @@ class TestSuite:
         """
 
         a_test = self.find_test_by_name(name)
+
         if a_test != None:
             a_test.start_vary(nb_times)
         elif self.debug == True:
@@ -212,10 +214,8 @@ class Test:
                   determine the number of threads to create
     init_func   : function being called at init time before test
                   execution.
-    exec_func   : function being executed by the test. As every test is
-                  a thread (even a single one) this function must wait
-                  for the event passed in first argument. Second
-                  argument is one context.
+    exec_func   : function being executed by the test. takes only one argument
+                  as the context. Must return a tuple : (boolean, context)
     final_func  : function being called at the end of the test
                   execution
     vary_func   : function being used to vary the context between
@@ -302,9 +302,6 @@ class Test:
         self.result = True
         self.nb_threads = 0
 
-#    def set_new_context(self, context_list):
-#        self.context_list = context_list
-
     def start_test(self, i, vary):
         """Starts the test in a threaded way
 
@@ -338,7 +335,7 @@ class Test:
         begin_cpu = time.clock()
         begin_time = time.time()
 
-        result = self.exec_func(context)
+        result, context = self.exec_func(context)
 
         end_time = time.time()
         end_cpu = time.clock()

@@ -1,7 +1,12 @@
+16.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Rewrite of some for statements (more direct is better)
+            * Now tests should return a tuple containing a boolean to say wether
+              the test ran ok or not an the context : (boolean, context)
+
 09.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Added a new stress suite for cpu load with a new stress test using
               base64() algorithm to make the cpu work ! (because hashlib is not
-              available in 2.4 and I need to be 2.4 compatible)
+              available in 2.4 and I need to be 2.4 compatible - for now !)
             * Corrected an initialisation bug in TestSuite class
 
 08.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
