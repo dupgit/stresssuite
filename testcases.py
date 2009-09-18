@@ -65,6 +65,7 @@ def main():
 
     # Test some functions/classes
     testModule('fss')
+    testModule('cpu_stress')
     testModule('stress')
     testModule('stresssuite')
 #

@@ -1,3 +1,6 @@
+18.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Writing doctests for cpu_stress tests
+
 16.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Rewrite of some for statements (more direct is better)
             * Now tests should return a tuple containing a boolean to say wether
