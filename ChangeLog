@@ -1,5 +1,7 @@
 18.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Writing doctests for cpu_stress tests
+            * New methods for Options class : transform_to_int() and usage()
+              and some new doctests
 
 16.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Rewrite of some for statements (more direct is better)

@@ -177,6 +177,14 @@ class Options:
     gnuplot = ''
 
     def __init__(self):
+        """Init function
+
+        >>> my_opts = Options()
+        >>> my_opts.runs == 0
+        True
+        >>> my_opts.base_path == '/tmp'
+        True
+        """
         self.runs = 0
         self.print_stats = True
         self.debug = False
@@ -189,9 +197,9 @@ class Options:
         self.buffer_size = 512
         self.gnuplot = ''
 
-# Help message for main program
-def usage():
-  print("""
+    # Help message for main program
+    def usage(self, exit_value):
+        print("""
   NAME
       stresssuite
 
@@ -259,33 +267,36 @@ def usage():
         -m 4 -s 10 --threads=5
       ./stresssuite.py --list
 
-  """)
-# End of function usage()
+        """)
+        sys.exit(exit_value)
+    # End of function usage()
 
-def transform_to_int(opt, arg):
-    """transform 'arg' argument from the command line to an int where
-    possible
+    def transform_to_int(self, opt, arg):
+        """transform 'arg' argument from the command line to an int where
+        possible
 
-    >>> transform_to_int('', '2')
-    2
-    """
+        >>> my_opts = Options()
+        >>> my_opts.transform_to_int('', '2')
+        2
+        """
 
-    try :
-        arg = int(arg)
-    except:
-        print("Error (%s), NUM must be an integer. Here '%s'" % \
-              (str(opt), str(arg)))
-        sys.exit(2)
+        try :
+            arg = int(arg)
+        except:
+            print("Error (%s), NUM must be an integer. Here '%s'" % \
+                 (str(opt), str(arg)))
+            sys.exit(2)
 
-    if arg > 0:
-        return arg
-    else:
-        print("Error (%s), NUM must be positive. Here %d" % (str(opt), \
-            arg))
-        sys.exit(2)
+        if arg > 0:
+            return arg
+        else:
+            print("Error (%s), NUM must be positive. Here %d" % (str(opt), \
+                  arg))
+            sys.exit(2)
 
-# End of transform_to_int function
+    # End of transform_to_int function
 
+# End of Class Options
 
 def parse_command_line(my_opts):
     """Parses command line's options and arguments
@@ -302,8 +313,7 @@ def parse_command_line(my_opts):
     except getopt.GetoptError, err:
         # print help information and exit with error :
         print("%s" % str(err))
-        usage()
-        sys.exit(2)
+        my_opts.usage(2)
 
     for opt, arg in opts:
         if my_opts.debug == True:
@@ -311,8 +321,7 @@ def parse_command_line(my_opts):
             print("arg = %s" % arg)
 
         if opt in ('-h', '--help'):
-            usage()
-            sys.exit(0)
+            my_opts.usage(0)
         elif opt in ('-l', '--list'):
             my_opts.list = True
         elif opt in ('-o', '--once'):
@@ -320,7 +329,7 @@ def parse_command_line(my_opts):
         elif opt in ('-n', '--no-stats'):
             my_opts.print_stats = False
         elif opt in ('-m', '--multiple'):
-            my_opts.runs = transform_to_int(opt, arg)
+            my_opts.runs = my_opts.transform_to_int(opt, arg)
         elif opt in ('-d', '--debug'):
             my_opts.debug = True
         elif opt in ('--testname'):
@@ -330,11 +339,11 @@ def parse_command_line(my_opts):
         elif opt in ('-p', '--path'):
             my_opts.base_path = arg
         elif opt in ('--threads'):
-            my_opts.nb_threads = transform_to_int(opt, arg)
+            my_opts.nb_threads = my_opts.transform_to_int(opt, arg)
         elif opt in ('-s', '--step'):
-            my_opts.step = transform_to_int(opt, arg)
+            my_opts.step = my_opts.transform_to_int(opt, arg)
         elif opt in ('--buffer-size'):
-            my_opts.buffer_size = transform_to_int(opt, arg)
+            my_opts.buffer_size = my_opts.transform_to_int(opt, arg)
         elif opt in ('--gnuplot'):
             my_opts.gnuplot = arg
 
