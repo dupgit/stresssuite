@@ -1,3 +1,6 @@
+21.10.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Changed 'coding' to 'encoding'
+
 18.09.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Writing doctests for cpu_stress tests
             * New methods for Options class : transform_to_int() and usage()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- encoding: utf8 -*-
 #
 #  Tools to stress your filesystem. Use at your own risks !
 #

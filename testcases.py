@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf8 -*-
+# -*- encoding: utf8 -*-
 #
 #  testscases for the StressSuite tools !
 #
