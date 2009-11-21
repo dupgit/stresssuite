@@ -466,19 +466,23 @@ class Test:
             print("%s;%s;%s;" % ('Tests'.center(8),  \
                   'CPU'.center(15), 'real time'.center(15)))
 
-            cpu_total = 0
-            real_total = 0
-
+            i = 0
             for times in self.times:
+                i += 1
+                cpu_total = 0
+                real_total = 0
+
                 for result in times:
                     cpu_time, real_time, context = result
                     cpu_total += cpu_time
                     real_total += real_time
 
-            cpu_str = '%5.04f' % (cpu_total)
-            real_str = '%5.04f' % (real_total)
-            print("%d ; %s ; %s" % (nb_tests, cpu_str, real_str))
-        else:
+                cpu_str = '%5.04f' % (cpu_total)
+                real_str = '%5.04f' % (real_total)
+                print("%d ; %s ; %s" % (i, cpu_str, real_str))
+
+            print("")
+        else: # here nb_tests <= 0
             print("%s - No tests has been ran !" % self.name)
 
 
