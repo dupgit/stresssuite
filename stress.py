@@ -34,6 +34,7 @@ __credits__ = "Thanks to Python makers"
 
 import os
 import threading
+import multiprocessing
 import time
 
 
@@ -98,7 +99,7 @@ class TestSuite:
             a_test.start_vary(nb_times)
 
 
-    def print_stats(self):
+    def print_stats(self, stats):
         """Print running statistics
 
         Print statistics on the tests sessions that have already ran
@@ -107,19 +108,19 @@ class TestSuite:
         print("Results for TestSuite '%s'" % self.name)
 
         for a_test in self.testlist:
-            a_test.print_stats()
+            a_test.print_stats(stats)
 
 
-    def save_in_gnuplot(self, path):
+    def save_in_gnuplot(self, path, stats):
         """Saving things to gnuplot files
 
         """
 
         for a_test in self.testlist:
-            a_test.save_in_gnuplot(path)
+            a_test.save_in_gnuplot(path, stats)
 
 
-    def print_stats_by_name(self, name):
+    def print_stats_by_name(self, name, stats):
         """Print running statistics
 
         Print statistics on test named 'name' from sessions that have
@@ -131,7 +132,7 @@ class TestSuite:
         a_test = self.find_test_by_name(name)
 
         if a_test != None:
-            a_test.print_stats()
+            a_test.print_stats(stats)
         elif self.debug == True:
             print("Testname %s was not found !" % name)
 
@@ -417,13 +418,8 @@ class Test:
                 return None
 
 
-    def print_stats(self):
-        """Prints statistics on the running sessions of the test
-
-        Each running session is timed (cpu and real time). These times
-        are saved along with the context used for the test (in a list
-        of list). This method prints all thoses values.
-        """
+    def print_normal_stats(self):
+        """Prints normal statistics for the running session"""
 
         nb_tests = len(self.times)
         if nb_tests > 0:
@@ -433,12 +429,15 @@ class Test:
             print("%s;%s;%s;%s" % ('Tests'.center(8),  \
                   'CPU'.center(15), 'real time'.center(15), \
                   'context'.center(38)))
+            nb_threads = len(self.times[0])
 
-            for i in range(nb_tests):
-                nb_threads = len(self.times[i])
-                self.thread_times = self.times[i]
-                for j in range(nb_threads):
-                    cpu_time, real_time, context = self.thread_times[j]
+            i = 0
+            for times in self.times:
+                i += 1
+                j = 0
+                for result in times:
+                    j += 1
+                    cpu_time, real_time, context = result
                     avg_cpu += cpu_time
                     avg_real += real_time
                     cpu_str = '%5.02f' % cpu_time
@@ -452,13 +451,52 @@ class Test:
             avg_cpu_str = '%5.04f' % (avg_cpu/(nb_tests * nb_threads))
             avg_real_str = '%5.04f' % (avg_real/(nb_tests * nb_threads))
             print("Averages : %s ; %s (over %d tests of %d threads)" %        \
-                  (avg_cpu_str, avg_real_str, i + 1, j + 1))
+                  (avg_cpu_str, avg_real_str, nb_tests, nb_threads))
             print("")
         else:
             print("%s - No tests has been ran !" % self.name)
 
 
-    def save_in_gnuplot(self, path):
+    def print_cumulative_stats(self):
+        """Prints normal statistics for the running session"""
+
+        nb_tests = len(self.times)
+        if nb_tests > 0:
+            print("Results for test '%s'" % self.name)
+            print("%s;%s;%s;" % ('Tests'.center(8),  \
+                  'CPU'.center(15), 'real time'.center(15)))
+
+            cpu_total = 0
+            real_total = 0
+
+            for times in self.times:
+                for result in times:
+                    cpu_time, real_time, context = result
+                    cpu_total += cpu_time
+                    real_total += real_time
+
+            cpu_str = '%5.04f' % (cpu_total)
+            real_str = '%5.04f' % (real_total)
+            print("%d ; %s ; %s" % (nb_tests, cpu_str, real_str))
+        else:
+            print("%s - No tests has been ran !" % self.name)
+
+
+    def print_stats(self, stats):
+        """Prints statistics on the running sessions of the test
+
+        Each running session is timed (cpu and real time). These times
+        are saved along with the context used for the test (in a list
+        of list). This method prints all thoses values.
+        """
+
+        if stats == 1:
+            self.print_normal_stats()
+        else:
+            self.print_cumulative_stats()
+
+
+    def save_in_gnuplot(self, path, stats):
         """Saves statistics on the running session in a gnuplot ready file
 
         Each running session is timed (cpu and real time). These times

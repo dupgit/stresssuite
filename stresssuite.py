@@ -126,19 +126,19 @@ class Collection:
             a_suite.list_tests()
 
 
-    def print_stats(self):
+    def print_stats(self, stats):
         """Prints all stats for all tests in all tests suites of this
         Collection"""
 
         for a_suite in self.suite_list:
-            a_suite.print_stats()
+            a_suite.print_stats(stats)
 
 
-    def save_in_gnuplot(self, path):
+    def save_in_gnuplot(self, path, stats):
         """Saves results in gnplot files"""
 
         for a_suite in self.suite_list:
-            a_suite.save_in_gnuplot(path)
+            a_suite.save_in_gnuplot(path, stats)
 
 
     def set_debug_mode(self, debug):
@@ -156,7 +156,8 @@ class Options:
     """A class to manage command line options
 
     runs        : int, how many runs to do
-    print_stats : boolean, says wether to print the stats or not
+    print_stats : int, 0 = do not print stats, 1 = print normal stats,
+                       2 = print cumulative stats
     debug       : boolean, says wether to go into debug mode or not
     list        : boolean, says wether to list the tests or not
     testname    : string, name of one test
@@ -165,7 +166,7 @@ class Options:
                   indicated by the thread
     """
     runs = 0
-    print_stats = True
+    print_stats = 1
     debug = False
     list = False
     testname = ''
@@ -186,7 +187,7 @@ class Options:
         True
         """
         self.runs = 0
-        self.print_stats = True
+        self.print_stats = 1
         self.debug = False
         self.list = False
         self.testname = ''
@@ -229,6 +230,9 @@ class Options:
 
       -n, --no-stats
         Does not print any stats at the end of the tests
+
+      -c, --cumulative
+        Prints stats in a cumulative manner
 
       --gnuplot=PATH
         Export results (stats) to gnuplot formated files. PATH indicates
@@ -302,10 +306,11 @@ def parse_command_line(my_opts):
     """Parses command line's options and arguments
     """
 
-    short_options = "hlondm:p:s:"
-    long_options = ["help", "list", "once", "no-stats", "debug",     \
-                    "multiple=", 'testname=', 'testsuite=', 'path=', \
-                    'threads=', 'step=', 'buffer-size=', 'gnuplot=']
+    short_options = "hlondcm:p:s:"
+    long_options = ['help', 'list', 'once', 'no-stats', 'debug',     \
+                    'multiple=', 'testname=', 'testsuite=', 'path=', \
+                    'threads=', 'step=', 'buffer-size=', 'gnuplot=', \
+                    'cumulative']
 
     # Read options and arguments
     try:
@@ -327,7 +332,9 @@ def parse_command_line(my_opts):
         elif opt in ('-o', '--once'):
             my_opts.runs = 1
         elif opt in ('-n', '--no-stats'):
-            my_opts.print_stats = False
+            my_opts.print_stats = 0
+        elif opt in ('c', '--cumulative'):
+            my_opts.print_stats = 2
         elif opt in ('-m', '--multiple'):
             my_opts.runs = my_opts.transform_to_int(opt, arg)
         elif opt in ('-d', '--debug'):
@@ -379,8 +386,8 @@ def main():
     # parsing options from the command line
     my_opts = parse_command_line(my_opts)
 
-    collec = init_all_tests(collec, my_opts.base_path,        \
-                            my_opts.nb_threads, my_opts.step, \
+    collec = init_all_tests(collec, my_opts.base_path,          \
+                            my_opts.nb_threads, my_opts.step,   \
                             my_opts.debug, my_opts.buffer_size)
 
     if my_opts.debug == True:
@@ -403,11 +410,11 @@ def main():
         if a_test != None:
             a_test.start_vary(my_opts.runs)
 
-            if my_opts.print_stats == True:
-                a_test.print_stats()
+            if my_opts.print_stats != 0:
+                a_test.print_stats(my_opts.print_stats)
 
             if my_opts.gnuplot != '':
-                a_test.save_in_gnuplot(my_opts.gnuplot)
+                a_test.save_in_gnuplot(my_opts.gnuplot, my_opts.print_stats)
 
     elif my_opts.testsuite != '':
         if my_opts.debug == True:
@@ -418,21 +425,22 @@ def main():
         if a_testsuite != None:
             a_testsuite.run_test_suite_once_vary(my_opts.runs)
 
-            if my_opts.print_stats == True:
-                a_testsuite.print_stats()
+            if my_opts.print_stats != 0:
+                a_testsuite.print_stats(my_opts.print_stats)
 
             if my_opts.gnuplot != '':
-                a_testsuite.save_in_gnuplot(my_opts.gnuplot)
+                a_testsuite.save_in_gnuplot(my_opts.gnuplot,     \
+                                            my_opts.print_stats)
 
     else:
         collec.run_all_stress_suites_vary(my_opts.runs)
 
         # Printing results if stated
-        if my_opts.print_stats == True:
-            collec.print_stats()
+        if my_opts.print_stats != 0:
+            collec.print_stats(my_opts.print_stats)
 
         if my_opts.gnuplot != '':
-            collec.save_in_gnuplot(my_opts.gnuplot)
+            collec.save_in_gnuplot(my_opts.gnuplot, my_opts.print_stats)
 
 # End of main function
 
