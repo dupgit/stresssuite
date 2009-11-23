@@ -458,7 +458,7 @@ class Test:
 
 
     def print_cumulative_stats(self):
-        """Prints normal statistics for the running session"""
+        """Prints cumulative statistics for the running session"""
 
         nb_tests = len(self.times)
         if nb_tests > 0:
@@ -481,7 +481,7 @@ class Test:
 
                 cpu_str = '%5.04f' % (cpu_total)
                 real_str = '%5.04f' % (real_total)
-                context_resumed = self.print_c_func('print', context)
+                context_resumed = str(self.print_c_func('vary', context))
                 print("%s;%s ;%s ;%s;%s" % (str(i).center(8),                 \
                       cpu_str.rjust(12), real_str.rjust(12),                  \
                       str(nb_threads).center(11), context_resumed.rjust(31)))
@@ -505,14 +505,9 @@ class Test:
             self.print_cumulative_stats()
 
 
-    def save_in_gnuplot(self, path, stats):
-        """Saves statistics on the running session in a gnuplot ready file
-
-        Each running session is timed (cpu and real time). These times
-        are saved along with the context used for the test (in a list
-        of list). This method saves all thoses values into a gnuplot ready
-        file
-        """
+    def save_in_gnuplot_normal(self, path):
+        """Saves statistics on the running session in a gnuplot ready file in a
+normal way."""
 
         if os.path.exists(path):
             file_name = '%s/%s.p' % (path, self.name)
@@ -581,6 +576,72 @@ size 1280,960\n')
                        file_name)
 
             return None
+
+    # End of save_in_gnuplot_normal() function
+
+    def save_in_gnuplot_cumulative(self, path):
+        """Saves statistics on the running session in a gnuplot ready file in a
+normal way."""
+
+        if os.path.exists(path):
+            file_name = '%s/%s.p' % (path, self.name)
+        else:
+            print('Error while trying to openning path %s' % path)
+            return None
+
+        try:
+            gnuplot = open(file_name, 'a+')
+
+            nb_tests = len(self.times)
+            if nb_tests > 0:
+                nb_threads = len(self.times[0])
+                cpu_time, real_time, context = self.times[0][0]
+                inverse = []
+
+                for times in self.times:
+                    cpu_total = 0
+                    real_total = 0
+                    for result in times:
+                        cpu_time, real_time, context = result
+                        cpu_total += cpu_time
+                        real_total += real_time
+
+                    gnuplot.write('%d %f %f\n' %                          \
+                                     (self.print_c_func('vary', context), \
+                                     cpu_total, real_total))
+
+                gnuplot.write('e\n')
+                gnuplot.close()
+
+            else:
+                if self.debug == True:
+                    print("%s - No tests has been ran !" % self.name)
+                return None
+
+        except:
+            if self.debug == True:
+                print('Something went wrong while trying to open %s file' %
+                       file_name)
+            return None
+
+        # End of save_in_gnuplot_cumulative() function
+
+
+    def save_in_gnuplot(self, path, stats):
+        """Saves statistics on the running session in a gnuplot ready file
+
+        Each running session is timed (cpu and real time). These times
+        are saved along with the context used for the test (in a list
+        of list). This method saves all thoses values into a gnuplot ready
+        file
+        """
+
+        if stats == 1:
+            self.save_in_gnuplot_normal(path)
+        else:
+            self.save_in_gnuplot_cumulative(path)
+
+
 
     name = ''                      # name for the test
     description = ''               # description for the test
