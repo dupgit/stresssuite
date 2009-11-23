@@ -304,7 +304,7 @@ class Test:
         self.nb_threads = 0
 
     def start_test(self, child_conn, i, vary, context):
-        """Starts the test in a threaded way
+        """Starts the test in a multiprossed way
 
         Take a index that tells which context is used in the
         context_list and take one boolean argument, which tells wether
@@ -677,7 +677,7 @@ normal way."""
     times = []                     # execution times tuples
                                    # (cpu, real_time, context)
     debug = False                  # debug mode on = True ; off = False
-    thread_times = []              # list of execution timles for one
+    thread_times = []              # list of execution times for one
                                    # thread
     lock = None                    # lock to manage a critical section
                                    # in the threads
