@@ -397,6 +397,7 @@ class Test:
 
             self.ok_to_go.set()
 
+            i = 0
             for thread in thread_list:
                 (a_process, parent_conn) = thread
 
@@ -406,6 +407,7 @@ class Test:
                 self.thread_times.append(a_time)
                 self.context_list[i] = context
                 self.result = self.result and result
+                i += 1
 
                 a_process.join()
 
