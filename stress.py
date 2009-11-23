@@ -297,13 +297,13 @@ class Test:
         self.debug = debug
         self.times = []
         self.thread_times = []
-        self.lock = threading.Lock()
-        self.ok_to_go = threading.Event()
+        self.lock = multiprocessing.Lock()
+        self.ok_to_go = multiprocessing.Event()
         self.step = step
         self.result = True
         self.nb_threads = 0
 
-    def start_test(self, i, vary):
+    def start_test(self, child_conn, i, vary, context):
         """Starts the test in a threaded way
 
         Take a index that tells which context is used in the
@@ -317,21 +317,20 @@ class Test:
         context is safe to edit (not self.context_list)
         """
 
-        context = self.context_list[i]
         if self.debug == True:
             print("Now running test '%s' ; context : %s" %
                  (self.name, str(context)))
-            print("start_test(%d, %s)" % (i, str(vary)))
+            print("start_test(%s, %d, %s, %s)" %
+                 (str(child_conn), i, str(vary), str(context)))
 
         context = self.init_func(context)
-
-        # Critical section protected by a lock/release mutex mechanism
-        self.lock.acquire()
-        self.nb_threads += 1
-        self.lock.release()
+        child_conn.send(1)
 
         # Wait for the event "start"
         self.ok_to_go.wait()
+
+        if self.debug == True:
+            print("Test started")
 
         begin_cpu = time.clock()
         begin_time = time.time()
@@ -349,12 +348,11 @@ class Test:
         if (vary == True and result == True):
             context = self.vary_func(self.step, context)
 
-        # Critical section protected by a lock/release mutex mechanism
-        self.lock.acquire()
-        self.thread_times.append(a_time)
-        self.context_list[i] = context
-        self.result = self.result and result
-        self.lock.release()
+        # Puting all results in a tuple
+        a_tuple = a_time, context, result
+
+        child_conn.send(a_tuple)
+        child_conn.close()
 
         if self.debug == True:
             print("Test ended")
@@ -367,32 +365,49 @@ class Test:
         Tests are launched each in a thread
         """
         if self.result == True:
+
             nb_threads = len(self.context_list)
             thread_list = []
             self.thread_times = []
             self.nb_threads = 0
+
             for i in range(nb_threads):
-                a_thread = threading.Thread(target=self.start_test, \
-                                            args=(i, vary))
-                a_thread.start()
-                thread_list.append(a_thread)
+                if self.debug == True:
+                    print('Spawing a new process...')
+                parent_conn, child_conn = multiprocessing.Pipe()
+                a_process = multiprocessing.Process(target=self.start_test,    \
+                                                    args=(child_conn, i, vary, \
+                                                    self.context_list[i]))
+                a_process.start()
+                a_tuple = a_process, parent_conn
+                thread_list.append(a_tuple)
+                if self.debug == True:
+                    print('%s' % str(a_process))
 
 
             # Sending the event to really start
             # waiting thata the last thread finishes its init ...
-            n = 0
-            while (self.nb_threads != nb_threads and n < 1200):
-                time.sleep(0.1)
-                n +=1
+
+            for thread in thread_list:
+                (a_process, parent_conn) = thread
+                self.nb_threads += parent_conn.recv()
 
             if self.debug == True:
-                print('%d - %d - %d' % (self.nb_threads, nb_threads, n))
+                print('%d =? %d' % (self.nb_threads, nb_threads))
 
             self.ok_to_go.set()
 
-            for i in range(nb_threads):
-                a_thread = thread_list[i]
-                a_thread.join()
+            for thread in thread_list:
+                (a_process, parent_conn) = thread
+
+                a_tuple = parent_conn.recv()
+                (a_time, context, result) = a_tuple
+
+                self.thread_times.append(a_time)
+                self.context_list[i] = context
+                self.result = self.result and result
+
+                a_process.join()
 
             # Every thread has joined and we have now the times in the
             # list thread_times
@@ -578,6 +593,7 @@ size 1280,960\n')
             return None
 
     # End of save_in_gnuplot_normal() function
+
 
     def save_in_gnuplot_cumulative(self, path):
         """Saves statistics on the running session in a gnuplot ready file in a
