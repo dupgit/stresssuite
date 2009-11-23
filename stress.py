@@ -463,8 +463,10 @@ class Test:
         nb_tests = len(self.times)
         if nb_tests > 0:
             print("Results for test '%s'" % self.name)
-            print("%s;%s;%s;" % ('Tests'.center(8),  \
-                  'CPU'.center(15), 'real time'.center(15)))
+            print("%s;%s;%s;%s;%s" % ('Tests'.center(8),          \
+                  'CPU'.center(13), 'real time'.center(13), \
+                  'processes'.center(11), 'context'.center(31)))
+            nb_threads = len(self.times[0])
 
             i = 0
             for times in self.times:
@@ -479,7 +481,10 @@ class Test:
 
                 cpu_str = '%5.04f' % (cpu_total)
                 real_str = '%5.04f' % (real_total)
-                print("%d ; %s ; %s" % (i, cpu_str, real_str))
+                context_resumed = self.print_c_func('print', context)
+                print("%s;%s ;%s ;%s;%s" % (str(i).center(8),                 \
+                      cpu_str.rjust(12), real_str.rjust(12),                  \
+                      str(nb_threads).center(11), context_resumed.rjust(31)))
 
             print("")
         else: # here nb_tests <= 0
