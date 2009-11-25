@@ -21,7 +21,7 @@
 #  Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #
 
-"""cpu_stress tries to load cpu usage
+"""cpu_stress tries to load your cpu(s)
 
 Collection of tools and functions to stress your cpu(s)
 """
@@ -33,7 +33,46 @@ __credits__ = "Thanks to Python makers"
 
 import os
 import base64
+import hashlib
 import stress
+
+
+def cpu_hash_stress_test(context):
+    """Does calculates somes hashs to load the cpu
+
+    >>> cpu_hash_stress_test(('My string', 10))
+    (True, ('My string', 10))
+
+    >>> cpu_hash_stress_test(('My string', -10))
+    (False, ('My string', -10))
+    """
+
+    a_string, nb_tests = context
+
+    if nb_tests > 0:
+
+        clef_sha = hashlib.sha512()
+        clef_md5 = hashlib.md5()
+        clef_sha.update(a_string)
+        clef_md5.update(a_string)
+        encoded_sha = clef_sha.hexdigest()
+        encoded_md5 = clef_md5.hexdigest()
+
+        for i in xrange(nb_tests):
+            clef_sha.update(encoded_sha + encoded_md5)
+            clef_md5.update(encoded_md5 + encoded_sha)
+            encoded_sha = clef_sha.hexdigest()
+            encoded_md5 = clef_md5.hexdigest()
+
+        context = a_string, nb_tests
+
+        return (True, context)
+
+    else:
+        return (False, context)
+
+# End of cpu_hash_stress_test() function
+
 
 
 def cpu_encode_stress_test(context):
@@ -52,7 +91,7 @@ def cpu_encode_stress_test(context):
 
         decoded = a_string
 
-        for i in range(nb_tests):
+        for i in xrange(nb_tests):
             encoded = base64.b64encode(decoded)
             decoded = base64.b64decode(encoded)
             decoded = decoded.encode('rot13')
@@ -190,9 +229,13 @@ def Cpu_Tests(nb_threads, step, debug):
 
     stresscpu = stress.TestSuite('CPU', 'Cpu related tests')
 
-
     # Test 0 -- Cpu Encode Stress Test
     cpu_est_funcs = cpu_est_init, cpu_encode_stress_test, cpu_est_final, \
+                    cpu_est_vary, cpu_est_print_c
+
+
+    # Test 1 -- Cpu Hash Stress Test
+    cpu_hst_funcs = cpu_est_init, cpu_hash_stress_test, cpu_est_final, \
                     cpu_est_vary, cpu_est_print_c
 
     a_string = """This is an example string to be computed by the alogrithm in
@@ -200,9 +243,12 @@ def Cpu_Tests(nb_threads, step, debug):
     memory. If one sees a bug, please report to the author or current
     maintainer"""
 
-    nb_tests = 20000L
+    nb_tests = 2000L
 
     cpu_est_context_list = make_cpu_est_context_list(nb_threads, a_string, \
+                                                     nb_tests)
+
+    cpu_hst_context_list = make_cpu_est_context_list(nb_threads, a_string, \
                                                      nb_tests)
 
     if (cpu_est_context_list != []):
@@ -210,8 +256,12 @@ def Cpu_Tests(nb_threads, step, debug):
                            'Stress the cpu(s) with base64 and rot13 functions',\
                            cpu_est_funcs, cpu_est_context_list, step, debug)
 
-        stresscpu.add_test(cest)
+        chst = stress.Test('Cpu hash tests', \
+                           'Stress the cpu(s) with sha512 and md5 functions', \
+                           cpu_hst_funcs, cpu_hst_context_list, step, debug)
 
+        stresscpu.add_test(cest)
+        stresscpu.add_test(chst)
 
     return stresscpu
 

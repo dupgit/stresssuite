@@ -163,7 +163,7 @@ class Options:
     testname    : string, name of one test
     testsuite   : string, name of one test suite
     gnuplot     : string, if set, generates gnuplot ready files at the location
-                  indicated by the thread
+                  indicated by the path
     """
     runs = 0
     print_stats = 1
@@ -172,7 +172,7 @@ class Options:
     testname = ''
     testsuite = ''
     base_path = '/tmp'
-    nb_threads = 1
+    nb_process = 1
     step = 2
     buffer_size = 512
     gnuplot = ''
@@ -193,7 +193,7 @@ class Options:
         self.testname = ''
         self.testsuite = ''
         self.base_path = '/tmp'
-        self.nb_threads = 1
+        self.nb_process = 1
         self.step = 2
         self.buffer_size = 512
         self.gnuplot = ''
@@ -241,8 +241,8 @@ class Options:
       -m NUM, --multiple=NUM
         Tell to run the tests exactly NUM times
 
-      --threads=NUM
-        Tell the numbers of threads for one test (one by default)
+      --process=NUM
+        Tell the numbers of process for one test (one by default)
 
       --buffer-size=NUM
         Tells the buffer size to use when creating files (512 by default)
@@ -266,14 +266,15 @@ class Options:
     NAME must be a name as listed by -l or --list option
 
   EXAMPLE
-      ./stresssuite.py -d -p /home/dup/tmp -m 10
-      ./stresssuite.py -d -p /home/dup/tmp/stressfs --testsuite='Files' \\
-        -m 4 -s 10 --threads=5
+      ./stresssuite.py -d --path=/home/dup/tmp -m 10
+      ./stresssuite.py -d --path=/home/dup/tmp/stressfs --testsuite='Files' \\
+        -m 4 -s 10 --process=5
       ./stresssuite.py --list
 
         """)
         sys.exit(exit_value)
     # End of function usage()
+
 
     def transform_to_int(self, opt, arg):
         """transform 'arg' argument from the command line to an int where
@@ -302,6 +303,7 @@ class Options:
 
 # End of Class Options
 
+
 def parse_command_line(my_opts):
     """Parses command line's options and arguments
     """
@@ -309,7 +311,7 @@ def parse_command_line(my_opts):
     short_options = "hlondcm:p:s:"
     long_options = ['help', 'list', 'once', 'no-stats', 'debug',     \
                     'multiple=', 'testname=', 'testsuite=', 'path=', \
-                    'threads=', 'step=', 'buffer-size=', 'gnuplot=', \
+                    'process=', 'step=', 'buffer-size=', 'gnuplot=', \
                     'cumulative']
 
     # Read options and arguments
@@ -345,8 +347,8 @@ def parse_command_line(my_opts):
             my_opts.testsuite = arg
         elif opt in ('-p', '--path'):
             my_opts.base_path = arg
-        elif opt in ('--threads'):
-            my_opts.nb_threads = my_opts.transform_to_int(opt, arg)
+        elif opt in ('--process'):
+            my_opts.nb_process = my_opts.transform_to_int(opt, arg)
         elif opt in ('-s', '--step'):
             my_opts.step = my_opts.transform_to_int(opt, arg)
         elif opt in ('--buffer-size'):
@@ -358,7 +360,7 @@ def parse_command_line(my_opts):
 # End function parse_command_line()
 
 
-def init_all_tests(collec, base_path, nb_threads, step, debug, buffer_size):
+def init_all_tests(collec, base_path, nb_process, step, debug, buffer_size):
     """Inits the collection
 
     Add all tests_suites to the collection
@@ -366,10 +368,10 @@ def init_all_tests(collec, base_path, nb_threads, step, debug, buffer_size):
 
     # Add here your own stress suite !
 
-    stressfs = fss.FileSystem_Tests(base_path, nb_threads, step, debug, \
+    stressfs = fss.FileSystem_Tests(base_path, nb_process, step, debug, \
                                     buffer_size)
 
-    stresscpu = cpu_stress.Cpu_Tests(nb_threads, step, debug)
+    stresscpu = cpu_stress.Cpu_Tests(nb_process, step, debug)
 
     collec.add_suite(stressfs)
     collec.add_suite(stresscpu)
@@ -387,7 +389,7 @@ def main():
     my_opts = parse_command_line(my_opts)
 
     collec = init_all_tests(collec, my_opts.base_path,          \
-                            my_opts.nb_threads, my_opts.step,   \
+                            my_opts.nb_process, my_opts.step,   \
                             my_opts.debug, my_opts.buffer_size)
 
     if my_opts.debug == True:

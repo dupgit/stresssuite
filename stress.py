@@ -207,44 +207,44 @@ class Test:
     contexts for specific execution context (uppon to the test to define
     its  context).
 
-    Properties :
-    name        : name for the test
-    description : description for the test
-    context_list: execution context must be a list of contexts for
-                  multithreaded tests. Number of elements will
-                  determine the number of threads to create
-    init_func   : function being called at init time before test
-                  execution.
-    exec_func   : function being executed by the test. takes only one argument
-                  as the context. Must return a tuple : (boolean, context)
-    final_func  : function being called at the end of the test
-                  execution
-    vary_func   : function being used to vary the context between
-                  succesive calls
-    print_c_func: function that should return a string that resume the
-                  context to a maximum of 37 charaters (context changes
-                  only a little beetween succesive calls)
-                  Takes 2 arguments : what and context
-                  what is automatic and have 3 values : 'print', 'config' and
-                  'vary' :
-                   - print  : the function must return a 37 max char lenght
-                              string
-                   - config : the function must return a string with the name of
-                              the variable beeing stepped
-                   - vary   : the function must return an integer with the value
-                              of the variable beeing stepped
-    times       : list of list of execution times tuples
-                  (cpu, real_time, context)
-    thread_times: list of execution time tuples for one thread
-    debug       : debug mode : on = True (verbose), off = False
-    lock        : Lock() to avoid unwanted side effects with threads
-    ok_to_go    : Event() to say to all threads "ready... heady...
-                  steady.... goooo !!"
-    step        : an integer to indicate to the vary function a step (it
-                  can be used as the conceptor of the vary function
-                  wants)
-    result      : result for the test : True test succeded and can
-                  continue again. False : the test failed and must stop
+    Properties   :
+    name         : name for the test
+    description  : description for the test
+    context_list : execution context must be a list of contexts for
+                   multiprocessed tests. Number of elements will
+                   determine the number of processes to create
+    init_func    : function being called at init time before test
+                   execution.
+    exec_func    : function being executed by the test. takes only one argument
+                   as the context. Must return a tuple : (boolean, context)
+    final_func   : function being called at the end of the test
+                   execution
+    vary_func    : function being used to vary the context between
+                   succesive calls
+    print_c_func : function that should return a string that resume the
+                   context to a maximum of 37 charaters (context changes
+                   only a little beetween succesive calls)
+                   Takes 2 arguments : what and context
+                   what is automatic and have 3 values : 'print', 'config' and
+                   'vary' :
+                    - print  : the function must return a 37 max char lenght
+                               string
+                    - config : the function must return a string with the name of
+                               the variable beeing stepped
+                    - vary   : the function must return an integer with the value
+                               of the variable beeing stepped
+    times        : list of list of execution times tuples
+                   (cpu, real_time, context)
+    process_times: list of execution time tuples for one process
+    debug        : debug mode : on = True (verbose), off = False
+    lock         : Lock() to avoid unwanted side effects with processes
+    ok_to_go     : Event() to say to all processes "ready... heady...
+                   steady.... GOOOoooo !!"
+    step         : an integer to indicate to the vary function a step (it
+                   can be used as the conceptor of the vary function
+                   wants)
+    result       : result for the test : True test succeded and can
+                   continue again. False : the test failed and must stop
     """
 
     # default functions (init, test, final and vary) for the default
@@ -278,7 +278,7 @@ class Test:
         order), an init function, a test function, a final function, a vary
         function and print_context function.
         context_list is a list of contexts to be used by the tests. The number
-        of elements will determine the number of threads to execute. Step is a
+        of elements will determine the number of processes to execute. Step is a
         number that will be used to increment some variable in the test. At
         last you can use a boolean to tell if you want a verbose mode (debug
         mode - False by default )
@@ -296,12 +296,12 @@ class Test:
         self.context_list = context_list
         self.debug = debug
         self.times = []
-        self.thread_times = []
+        self.process_times = []
         self.lock = multiprocessing.Lock()
         self.ok_to_go = multiprocessing.Event()
         self.step = step
         self.result = True
-        self.nb_threads = 0
+        self.nb_process = 0
 
     def start_test(self, child_conn, i, vary, context):
         """Starts the test in a multiprossed way
@@ -362,16 +362,16 @@ class Test:
     def start_once(self, vary=False):
         """Starts the test only once
 
-        Tests are launched each in a thread
+        Tests are launched each in process
         """
         if self.result == True:
 
-            nb_threads = len(self.context_list)
-            thread_list = []
-            self.thread_times = []
-            self.nb_threads = 0
+            nb_process = len(self.context_list)
+            process_list = []
+            self.process_times = []
+            self.nb_process = 0
 
-            for i in range(nb_threads):
+            for i in range(nb_process):
                 if self.debug == True:
                     print('Spawing a new process...')
                 parent_conn, child_conn = multiprocessing.Pipe()
@@ -380,42 +380,42 @@ class Test:
                                                     self.context_list[i]))
                 a_process.start()
                 a_tuple = a_process, parent_conn
-                thread_list.append(a_tuple)
+                process_list.append(a_tuple)
                 if self.debug == True:
                     print('%s' % str(a_process))
 
 
             # Sending the event to really start
-            # waiting thata the last thread finishes its init ...
+            # waiting thata the last process finishes its init ...
 
-            for thread in thread_list:
-                (a_process, parent_conn) = thread
-                self.nb_threads += parent_conn.recv()
+            for process_context in process_list:
+                (a_process, parent_conn) = process_context
+                self.nb_process += parent_conn.recv()
 
             if self.debug == True:
-                print('%d =? %d' % (self.nb_threads, nb_threads))
+                print('%d =? %d' % (self.nb_process, nb_process))
 
             self.ok_to_go.set()
 
             i = 0
-            for thread in thread_list:
-                (a_process, parent_conn) = thread
+            for process_context in process_list:
+                (a_process, parent_conn) = process_context
 
                 a_tuple = parent_conn.recv()
                 (a_time, context, result) = a_tuple
 
-                self.thread_times.append(a_time)
+                self.process_times.append(a_time)
                 self.context_list[i] = context
                 self.result = self.result and result
                 i += 1
 
                 a_process.join()
 
-            # Every thread has joined and we have now the times in the
-            # list thread_times
+            # Every processes has joined and we have now the times in the
+            # list process_times
             self.ok_to_go.clear()
-            self.times.append(self.thread_times)
-            del self.thread_times
+            self.times.append(self.process_times)
+            del self.process_times
 
 
     def start_vary(self, nb_times):
@@ -446,7 +446,7 @@ class Test:
             print("%s;%s;%s;%s" % ('Tests'.center(8),  \
                   'CPU'.center(15), 'real time'.center(15), \
                   'context'.center(38)))
-            nb_threads = len(self.times[0])
+            nb_process = len(self.times[0])
 
             i = 0
             for times in self.times:
@@ -465,10 +465,10 @@ class Test:
                           real_str.rjust(13),        \
                           str(context_resumed).rjust(37)))
 
-            avg_cpu_str = '%5.04f' % (avg_cpu/(nb_tests * nb_threads))
-            avg_real_str = '%5.04f' % (avg_real/(nb_tests * nb_threads))
-            print("Averages : %s ; %s (over %d tests of %d threads)" %        \
-                  (avg_cpu_str, avg_real_str, nb_tests, nb_threads))
+            avg_cpu_str = '%5.04f' % (avg_cpu/(nb_tests * nb_process))
+            avg_real_str = '%5.04f' % (avg_real/(nb_tests * nb_process))
+            print("Averages : %s ; %s (over %d tests of %d processes)" %        \
+                  (avg_cpu_str, avg_real_str, nb_tests, nb_process))
             print("")
         else:
             print("%s - No tests has been ran !" % self.name)
@@ -483,7 +483,7 @@ class Test:
             print("%s;%s;%s;%s;%s" % ('Tests'.center(8),          \
                   'CPU'.center(13), 'real time'.center(13), \
                   'processes'.center(11), 'context'.center(31)))
-            nb_threads = len(self.times[0])
+            nb_process = len(self.times[0])
 
             i = 0
             for times in self.times:
@@ -501,7 +501,7 @@ class Test:
                 context_resumed = str(self.print_c_func('vary', context))
                 print("%s;%s ;%s ;%s;%s" % (str(i).center(8),                 \
                       cpu_str.rjust(12), real_str.rjust(12),                  \
-                      str(nb_threads).center(11), context_resumed.rjust(31)))
+                      str(nb_process).center(11), context_resumed.rjust(31)))
 
             print("")
         else: # here nb_tests <= 0
@@ -544,36 +544,36 @@ size 1280,960\n')
 
             nb_tests = len(self.times)
             if nb_tests > 0:
-                nb_threads = len(self.times[0])
+                nb_process = len(self.times[0])
                 cpu_time, real_time, context = self.times[0][0]
                 inverse = []
 
-                gnuplot.write('set title "Results for test %s (%d threads)"\n' \
-                               % (self.name, nb_threads))
+                gnuplot.write('set title "Results for test %s (%d processes)"\n' \
+                               % (self.name, nb_process))
                 gnuplot.write('set ylabel "time (in s)"\n')
                 gnuplot.write('set xlabel "%s"\n' % \
                               self.print_c_func('config', context))
-                thread_str = 'plot \'-\' title "Thread 0" with lines'
+                process_str = 'plot \'-\' title "Process 0" with lines'
 
-                for i in range(nb_threads-1):
-                    thread_str += ', \'-\' title "Thread ' + str(i+1) + \
+                for i in range(nb_process-1):
+                    process_str += ', \'-\' title "Process ' + str(i+1) + \
                                   '" with lines'
                     inverse.append([])
 
-                gnuplot.write(thread_str + '\n')
+                gnuplot.write(process_str + '\n')
                 inverse.append([])
 
                 for i in range(nb_tests):
-                    nb_threads = len(self.times[i])
-                    self.thread_times = self.times[i]
-                    for j in range(nb_threads):
-                        cpu_time, real_time, context = self.thread_times[j]
-                        inverse[j].append(self.thread_times[j])
+                    nb_process = len(self.times[i])
+                    self.process_times = self.times[i]
+                    for j in range(nb_process):
+                        cpu_time, real_time, context = self.process_times[j]
+                        inverse[j].append(self.process_times[j])
 
-                for j in range(nb_threads):
-                    a_thread = inverse[j]
+                for j in range(nb_process):
+                    a_process = inverse[j]
                     for i in range(nb_tests):
-                        cpu_time, real_time, context = a_thread[i]
+                        cpu_time, real_time, context = a_process[i]
                         gnuplot.write('%d %f\n' %                         \
                                      (self.print_c_func('vary', context), \
                                      real_time))
@@ -612,7 +612,7 @@ normal way."""
 
             nb_tests = len(self.times)
             if nb_tests > 0:
-                nb_threads = len(self.times[0])
+                nb_process = len(self.times[0])
                 cpu_time, real_time, context = self.times[0][0]
                 inverse = []
 
@@ -677,12 +677,12 @@ normal way."""
     times = []                     # execution times tuples
                                    # (cpu, real_time, context)
     debug = False                  # debug mode on = True ; off = False
-    thread_times = []              # list of execution times for one
-                                   # thread
+    process_times = []             # list of execution times for one
+                                   # process
     lock = None                    # lock to manage a critical section
-                                   # in the threads
+                                   # in the process
     ok_to_go = None                # A specific signal send to the
-                                   # threads in order that they all
+                                   # processes in order that they all
                                    # begin at the same time (more or
                                    # less)
     step = 2                       # A step for the vary function

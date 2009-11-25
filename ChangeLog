@@ -1,3 +1,13 @@
+24.11.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Renamed all variables with 'thread' in it to 'process' something
+            * Renamed the option --thread to --process
+            * Added a new CPU stress test based on hashlib
+
+23.11.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Change from multithreaded to multiprocessed
+            * Added a new option --cumulative that cumulates stats from the
+              processes for each test.
+
 21.10.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Changed 'coding' to 'encoding'
 
