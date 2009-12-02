@@ -1,0 +1,107 @@
+StressSuite
+===========
+
+General Description
+-------------------
+
+StressSuite is a tool that provides a collection of stress suites. Thoses
+suites themselves provides stress tests. Thoses stress tests are intented
+to stress something specific.
+
+
+Stress suites
+-------------
+
+There is already two stress suites in stresssuite :
+ - For the filesystem named 'Files',
+ - For the CPU named 'CPU'
+
+Tests for 'Files' testsuite are :
+ - 000 : 'Directory creation' : Creates directories in one single directory
+ - 001 : 'Files creation' : Creates files in one single directory
+ - 002 : 'Zero filed files creation' : Creates zero filed files (size vary and
+          buffer size is an option)
+
+Tests for 'CPU' testsuite are :
+ - 000 : 'Cpu encode stress' : Stress the cpu(s) with base64 and rot13 functions
+ - 001 : 'Cpu hash tests' : Stress the cpu(s) with sha512 and md5 functions
+
+
+Usage
+-----
+
+  NAME
+      stresssuite
+
+  SYNOPSIS
+      stresssuite [OPTIONS]...
+
+  DESCRIPTION
+      Runs stress testsuites
+
+  OPTIONS
+      When two exclusive options are specified (like -o and -m for
+      instance), the selected one is the last specified on the command
+      line.
+
+      -h, --help
+        Show this help
+
+      -d, --debug
+        More verbose
+
+      -l, --list
+        Show all tests with their contexts. When this option is used, it
+        will prevail over -o or -m options
+
+      -o, --once
+        Runs all tests only once
+
+      -n, --no-stats
+        Does not print any stats at the end of the tests
+
+      -c, --cumulative
+        Prints stats in a cumulative manner
+
+      --gnuplot=PATH
+        Export results (stats) to gnuplot formated files. PATH indicates
+        the path where files might be created
+
+      -m NUM, --multiple=NUM
+        Tell to run the tests exactly NUM times
+
+      --process=NUM
+        Tell the numbers of process for one test (one by default)
+
+      --buffer-size=NUM
+        Tells the buffer size to use when creating files (512 by default)
+
+      -s, --step=NUM
+        Used in the vary function to step the algorithm (generally it
+        is used to multiply the number of tests but it depends on the
+        test itself to do what it wants with this value)
+
+      -p PATH, --path=PATH
+        Tells which path to use to run stresssuite program.
+        '/tmp' by default
+
+      --testname='NAME'
+        Selects one test specificaly
+
+      --testsuite='NAME'
+        Selects one entire test suite specificaly. If --testname is
+        specified at the same time then --testsuite option is ignored
+
+    NAME must be a name as listed by -l or --list option
+
+  EXAMPLES
+      ./stresssuite.py -d --path=/home/dup/tmp -m 10
+      ./stresssuite.py -d --path=/home/dup/tmp/stressfs --testsuite='Files' \\
+        -m 4 -s 10 --process=5
+      ./stresssuite.py --list
+
+Constraints
+-----------
+
+Should not work with python versions under 2.5 (hashlib and multiprocessing
+dependencies)

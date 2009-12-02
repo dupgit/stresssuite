@@ -208,7 +208,7 @@ class Options:
       stresssuite [OPTIONS]...
 
   DESCRIPTION
-      Runs File related TestSuites
+      Runs stress testsuites
 
   OPTIONS
       When two exclusive options are specified (like -o and -m for
@@ -265,7 +265,7 @@ class Options:
 
     NAME must be a name as listed by -l or --list option
 
-  EXAMPLE
+  EXAMPLES
       ./stresssuite.py -d --path=/home/dup/tmp -m 10
       ./stresssuite.py -d --path=/home/dup/tmp/stressfs --testsuite='Files' \\
         -m 4 -s 10 --process=5

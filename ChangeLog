@@ -1,3 +1,12 @@
+25.11.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * New sub-directory for the project
+            * New setup.py script and __init__.py script (to allow stresssuite
+              to become a package)
+            * New MANIFEST.in file that lists all files of the project that are
+              not in the package by default
+            * New description in README file
+            * Typos
+
 24.11.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * Renamed all variables with 'thread' in it to 'process' something
             * Renamed the option --thread to --process
