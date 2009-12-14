@@ -23,14 +23,15 @@
 
 """Program used to manage stress suites.
 
-It contains a FileSystem Stress Suite (fss module).
+It contains a filesystem stress suite (fss module) and a cpu stress suite
+(cpu_stress module).
 Use --list option to have a list of all available suites and tests
 To know more about how to use the program, use --help option.
 """
 
 __author__ = "Olivier Delhomme <olivier.delhomme@free.fr>"
 __date__ = "07.08.2009"
-__version__ = "$Revision: 0.0.1 $"
+__version__ = "Revision: 0.0.1"
 __credits__ = "Thanks to Python makers"
 
 import os

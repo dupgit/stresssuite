@@ -14,7 +14,7 @@ setup(
 
     version = '0.0.1',
 
-    # Short descriptin
+    # Short description
     description = ('Stress suites to stress your Filesystem, your CPU, ....'),
 
     # Longer one (here From the README file)

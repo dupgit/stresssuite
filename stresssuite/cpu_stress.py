@@ -28,7 +28,7 @@ Collection of tools and functions to stress your cpu(s)
 
 __author__ = "Olivier Delhomme <olivier.delhomme@free.fr>"
 __date__ = "09.09.2009"
-__version__ = "$Revision: 0.0.1 $"
+__version__ = "Revision: 0.0.1"
 __credits__ = "Thanks to Python makers"
 
 import os
@@ -193,7 +193,7 @@ def cpu_est_print_c(what, context):
 # End of cpu_est_print_c() function
 
 
-def make_cpu_est_context_list(nb_threads, a_string, nb_tests):
+def make_cpu_est_context_list(nb_process, a_string, nb_tests):
     """Build context list for Cpu Encode Stress Test
 
     >>> make_cpu_est_context_list(2, 'My string', 10)
@@ -206,7 +206,7 @@ def make_cpu_est_context_list(nb_threads, a_string, nb_tests):
 
     context_list = []
 
-    for i in range(nb_threads):
+    for i in xrange(nb_process):
         a_context = a_string, nb_tests
         context_list.append(a_context)
 
@@ -215,7 +215,7 @@ def make_cpu_est_context_list(nb_threads, a_string, nb_tests):
 # End of make_cpu_est_context_list() function
 
 
-def Cpu_Tests(nb_threads, step, debug):
+def Cpu_Tests(nb_process, step, debug):
     """Cpu test collector
 
     >>> a_testsuite = Cpu_Tests(2, 2, True)
@@ -245,10 +245,10 @@ def Cpu_Tests(nb_threads, step, debug):
 
     nb_tests = 2000L
 
-    cpu_est_context_list = make_cpu_est_context_list(nb_threads, a_string, \
+    cpu_est_context_list = make_cpu_est_context_list(nb_process, a_string, \
                                                      nb_tests)
 
-    cpu_hst_context_list = make_cpu_est_context_list(nb_threads, a_string, \
+    cpu_hst_context_list = make_cpu_est_context_list(nb_process, a_string, \
                                                      nb_tests)
 
     if (cpu_est_context_list != []):

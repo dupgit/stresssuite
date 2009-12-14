@@ -29,7 +29,7 @@ Class Test : one single test
 
 __author__ = "Olivier Delhomme <olivier.delhomme@free.fr>"
 __date__ = "07.08.2009"
-__version__ = "$Revision: 0.0.1 $"
+__version__ = "Revision: 0.0.1"
 __credits__ = "Thanks to Python makers"
 
 import os
@@ -304,14 +304,15 @@ class Test:
         self.nb_process = 0
 
     def start_test(self, child_conn, i, vary, context):
-        """Starts the test in a multiprossed way
+        """Starts the test in a multiprosessed way
 
-        Take a index that tells which context is used in the
+        Takes an index (i) that tells which context is used in the
         context_list and take one boolean argument, which tells wether
-        to run the vary function or not (by default it will not)
+        to run the vary function or not (by default it will not) and the
+        context itself.
         When the test is processed, init function is called with the
-        context; then the test itself is called (and the time the called
-        took is recorded) ; then the final function is called (you may
+        context; then the test itself is called (and the time it took is
+        recorded) ; then the final function is called (you may
         clean things or such here). If a vary test has been launched
         then the vary function is called at last.
         context is safe to edit (not self.context_list)
@@ -324,7 +325,7 @@ class Test:
                  (str(child_conn), i, str(vary), str(context)))
 
         context = self.init_func(context)
-        child_conn.send(1)
+        child_conn.send(1) # Sending that initialisation is done.
 
         # Wait for the event "start"
         self.ok_to_go.wait()
@@ -340,7 +341,7 @@ class Test:
         end_time = time.time()
         end_cpu = time.clock()
 
-        # This calculation is here to record the exact test context
+        # This calculation is here to record the exact test context time
         a_time = end_cpu - begin_cpu, end_time - begin_time, context
 
         context = self.final_func(context)
@@ -348,7 +349,7 @@ class Test:
         if (vary == True and result == True):
             context = self.vary_func(self.step, context)
 
-        # Puting all results in a tuple
+        # Puting all results in a tuple and send it in the connection
         a_tuple = a_time, context, result
 
         child_conn.send(a_tuple)
@@ -371,7 +372,7 @@ class Test:
             self.process_times = []
             self.nb_process = 0
 
-            for i in range(nb_process):
+            for i in xrange(nb_process):
                 if self.debug == True:
                     print('Spawing a new process...')
                 parent_conn, child_conn = multiprocessing.Pipe()
@@ -386,7 +387,7 @@ class Test:
 
 
             # Sending the event to really start
-            # waiting thata the last process finishes its init ...
+            # waiting that the last process finishes its init ...
 
             for process_context in process_list:
                 (a_process, parent_conn) = process_context
@@ -421,7 +422,7 @@ class Test:
     def start_vary(self, nb_times):
         """Start a vary test nb_times times"""
 
-        for i in range(nb_times):
+        for i in xrange(nb_times):
 
             if self.debug == True:
                 print('Run number %d / %d :' % (i+1, nb_times))
@@ -555,7 +556,7 @@ size 1280,960\n')
                               self.print_c_func('config', context))
                 process_str = 'plot \'-\' title "Process 0" with lines'
 
-                for i in range(nb_process-1):
+                for i in xrange(nb_process-1):
                     process_str += ', \'-\' title "Process ' + str(i+1) + \
                                   '" with lines'
                     inverse.append([])
@@ -563,16 +564,16 @@ size 1280,960\n')
                 gnuplot.write(process_str + '\n')
                 inverse.append([])
 
-                for i in range(nb_tests):
+                for i in xrange(nb_tests):
                     nb_process = len(self.times[i])
                     self.process_times = self.times[i]
-                    for j in range(nb_process):
+                    for j in xrange(nb_process):
                         cpu_time, real_time, context = self.process_times[j]
                         inverse[j].append(self.process_times[j])
 
-                for j in range(nb_process):
+                for j in xrange(nb_process):
                     a_process = inverse[j]
-                    for i in range(nb_tests):
+                    for i in xrange(nb_tests):
                         cpu_time, real_time, context = a_process[i]
                         gnuplot.write('%d %f\n' %                         \
                                      (self.print_c_func('vary', context), \

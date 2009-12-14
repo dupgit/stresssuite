@@ -1,6 +1,6 @@
  . Add new tests on files
  . Add other testsuites (eg to test postgresql for instance)
- . Add testcases and may see how to do coverage tests
+ . Add testcases and may be see how to do coverage tests
  . trap keyboard interrupts ?
  . May be transform step into a list of steps ? If so, we also need to modify
    gnuplot generation and print_c_func (and may be print_stats)

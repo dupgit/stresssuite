@@ -1,3 +1,10 @@
+13.12.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
+            * Typos and descriptions
+            * Changed all range() calls to xrange() ones
+            * Changed all 'thread' to 'process' (to reflect that now we only
+              spawn new process not threads).
+            * Preparing mzfft test to not only be zero (spaces) filed files
+
 25.11.2009 Olivier DELHOMME <olivier.delhomme@free.fr>
             * New sub-directory for the project
             * New setup.py script and __init__.py script (to allow stresssuite

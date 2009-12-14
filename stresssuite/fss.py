@@ -29,7 +29,7 @@ test its limits. Use at your own risks
 
 __author__ = "Olivier Delhomme <olivier.delhomme@free.fr>"
 __date__ = "07.08.2009"
-__version__ = "$Revision: 0.0.1 $"
+__version__ = "Revision: 0.0.1"
 __credits__ = "Thanks to Python makers"
 
 import os
@@ -63,7 +63,7 @@ def make_directory_test(context):
     i = 0
 
     if path != '':
-        for i in range(nb_tests):
+        for i in xrange(nb_tests):
             dir = path + '/' + str(i)
             try:
                 os.mkdir(dir)
@@ -200,7 +200,7 @@ def clean_directory(context):
     path, current_path, nb_tests = context
 
     if path != '':
-        for i in range(nb_tests):
+        for i in xrange(nb_tests):
             a_file = path + '/' + str(i)
             try:
                 os.remove(a_file)
@@ -216,12 +216,12 @@ def clean_directory(context):
 
 
 def make_files_test(context):
-    """Creates a huge number of files
+    """Creates a huge number of empty files
 
     All files are created in one directory.
     context is a tuple containing :
     . a path where we want to run the test
-    . the current path (I order to return correctly after the test)
+    . the current path (In order to return correctly after the test)
     . a number that indicates how many files we want to create
 
     >>> make_files_test(('', '', 3))
@@ -239,7 +239,7 @@ def make_files_test(context):
     i = 0
 
     if path != '':
-        for i in range(nb_tests):
+        for i in xrange(nb_tests):
             a_file_name = path + '/' + str(i)
             try:
                 a_file = file(a_file_name, 'w', 0)
@@ -277,7 +277,7 @@ def write_to_the_file(a_file, file_buffer, file_size):
 
         max = file_size / buffer_size
 
-        for i in range(max):
+        for i in xrange(max):
             try:
                 a_file.write(file_buffer)
             except:
@@ -296,29 +296,29 @@ def make_zero_filed_files_test(context):
     All files are created in one directory.
     context is a tuple containing :
     . a path where we want to run the test
-    . the current path (I order to return correctly after the test)
+    . the current path (In order to return correctly after the test)
     . a number that indicates how many files we want to create
     . a buffer of the proper size
     . a size for the file (in bytes)
+    . a buffer size (in bytes)
 
-
-    >>> context = mzfft_init(('/tmp/mzfft', '', 3, '    ', 512))
-    >>> make_zero_filed_files_test(('/tmp/mzfft', '', 3, '    ', 512))
+    >>> context = mzfft_init(('/tmp/mzfft', '', 3, '    ', 512, 4))
+    >>> make_zero_filed_files_test(('/tmp/mzfft', '', 3, '    ', 512, 4))
     ... clean_directory(('/tmp/mzfft', '', 3))
-    (True, ('/tmp/mzfft', '', 3, '    ', 512))
+    (True, ('/tmp/mzfft', '', 3, '    ', 512, 4))
 
-    >>> make_zero_filed_files_test(('', '', 3, '    ', 512))
-    (False, ('', '', 3, '    ', 512))
+    >>> make_zero_filed_files_test(('', '', 3, '    ', 512, 4))
+    (False, ('', '', 3, '    ', 512, 4))
 
     """
-    path, current_path, nb_tests, file_buffer, file_size = context
+    path, current_path, nb_tests, file_buffer, file_size, buffer_size = context
 
     first_err = -1
     i = 0
     result = True
 
     if path != '':
-        for i in range(nb_tests):
+        for i in xrange(nb_tests):
             a_file_name = path + '/' + str(i)
             try:
                 a_file = file(a_file_name, 'wb', 0)
@@ -341,7 +341,8 @@ def make_zero_filed_files_test(context):
         print("Test could not perform to the end ! Test finished at %d"\
               % first_err)
         nb_tests = first_err
-        context = path, current_path, nb_tests, file_buffer, file_size
+        context = path, current_path, nb_tests, file_buffer, file_size, \
+                  buffer_size
         return (False, context)
     else:
         if i == 0:
@@ -357,21 +358,25 @@ def mzfft_init(context):
 
     context is a tuple containing :
     . a path where we want to run the test
-    . the current path (I order to return correctly after the test)
+    . the current path (In order to return correctly after the test)
     . a number that indicates how many files we want to create
-    . a buffer of the proper size
+    . a buffer to be created here
     . a size for the file (in bytes)
+    . a buffer size (in bytes)
 
-    >>> context = mzfft_init(('/tmp/mzfft', '', 3, '    ', 512))
-    >>> path, current_path, nb_tests, file_buffer, file_size = context
+    >>> context = mzfft_init(('/tmp/mzfft', '', 3, '    ', 512, 4))
+    >>> path, current_path, nb_tests, file_buffer, file_size, buffer_size = \
+        context
     >>> path == '/tmp/mzfft' and nb_tests == 3
     True
+
     >>> file_buffer == '    ' and file_size == 512 and current_path != ''
     True
-
     """
 
-    path, current_path, nb_tests, file_buffer, file_size = context
+    path, current_path, nb_tests, file_buffer, file_size, buffer_size = context
+
+    file_buffer = make_buffer(buffer_size, True)
 
     current_path = os.getcwd()
     try:
@@ -382,10 +387,11 @@ def mzfft_init(context):
             os.chdir(path)
         except OSError, err:
             print("%s" % str(err))
-            context = '', current_path, nb_tests, file_buffer, file_size
+            context = '', current_path, nb_tests, file_buffer, file_size, \
+                      buffer_size
             return context
 
-    context = path, current_path, nb_tests, file_buffer, file_size
+    context = path, current_path, nb_tests, file_buffer, file_size, buffer_size
     return context
 
 # End of mzfft_init function
@@ -396,10 +402,11 @@ def mzfft_final(context):
 
     Removes all the Files contained in the test directory
     and returns to the original location
-
     """
 
-    path, current_path, nb_tests, file_buffer, file_size = context
+    path, current_path, nb_tests, file_buffer, file_size, buffer_size = context
+
+    file_buffer = ''
 
     clean_context = path, current_path, nb_tests
 
@@ -412,7 +419,7 @@ def mzfft_final(context):
             print("%s" % str(err))
             return context
 
-    context = path, current_path, nb_tests, file_buffer, file_size
+    context = path, current_path, nb_tests, file_buffer, file_size, buffer_size
     return context
 
 # End of mzfft_final function
@@ -421,15 +428,15 @@ def mzfft_final(context):
 def mzfft_vary_file_size(step, context):
     """A vary function for the make_zero_filed_files test
 
-    >>> mzfft_vary_file_size(2, ('/tmp/mzfft', '', 3, '    ', 512))
-    ('/tmp/mzfft', '', 3, '    ', 1024)
+    >>> mzfft_vary_file_size(2, ('/tmp/mzfft', '', 3, '    ', 512, 4))
+    ('/tmp/mzfft', '', 3, '    ', 1024, 4)
     """
 
-    path, current_path, nb_tests, file_buffer, file_size = context
+    path, current_path, nb_tests, file_buffer, file_size, buffer_size = context
 
     file_size *= step
 
-    context = path, current_path, nb_tests, file_buffer, file_size
+    context = path, current_path, nb_tests, file_buffer, file_size, buffer_size
     return context
 
 # End of mzfft_vary function
@@ -438,17 +445,17 @@ def mzfft_vary_file_size(step, context):
 def mzfft_print_c(what, context):
     """Function to resume context to a string with mimimun length
 
-    >>> mzfft_print_c('print', ('/tmp/mzfft', '', 3, '    ', 512))
+    >>> mzfft_print_c('print', ('/tmp/mzfft', '', 3, '    ', 512, 4))
     'T : 3 ; Bs : 4 ; Fs : 512'
 
-    >>> mzfft_print_c('config', ('/tmp/mzfft', '', 3, '    ', 512))
+    >>> mzfft_print_c('config', ('/tmp/mzfft', '', 3, '    ', 512, 4))
     'File size (creating 3 files with a buffer of 4 bytes)'
 
-    >>> mzfft_print_c('vary', ('/tmp/mzfft', '', 3, '    ', 512))
+    >>> mzfft_print_c('vary', ('/tmp/mzfft', '', 3, '    ', 512, 4))
     512
     """
 
-    path, current_path, nb_tests, file_buffer, file_size = context
+    path, current_path, nb_tests, file_buffer, file_size, buffer_size = context
 
     if what == 'print':
         return 'T : ' + str(nb_tests) + ' ; Bs : ' +  \
@@ -463,17 +470,17 @@ def mzfft_print_c(what, context):
 
 
 def mzfft_make_context_list(basepath, current_path, nb_tests, file_buffer, \
-                            file_size, nb_threads):
+                            file_size, buffer_size, nb_process):
     """Make a context list for the FileSystem test suite
 
-    >>> mzfft_make_context_list('/tmp/mzfft', '', 3, '    ', 512, 2)
-    [('/tmp/mzfft/0', '', 3, '    ', 512), ('/tmp/mzfft/1', '', 3, '    ', 512)]
+    >>> mzfft_make_context_list('/tmp/mzfft', '', 3, '    ', 512, 4, 2)
+    [('/tmp/mzfft/0', '', 3, '    ', 512, 4), ('/tmp/mzfft/1', '', 3, '    ', 512, 4)]
     """
 
     context_list = []
-    for i in range(nb_threads):
+    for i in xrange(nb_process):
         a_context = basepath + '/' + str(i), current_path, nb_tests, \
-                    file_buffer, file_size
+                    file_buffer, file_size, buffer_size
         context_list.append(a_context)
 
     return context_list
@@ -481,28 +488,31 @@ def mzfft_make_context_list(basepath, current_path, nb_tests, file_buffer, \
 # End of mzfft_make_context_list function
 
 
-def make_buffer(debug, buffer_size):
+def make_buffer(buffer_size, zero):
     """ Creates a buffer of buffer_size len
 
-    >>> make_buffer(False, 3)
+    Filled with spaces if zero is True and with some random if zero is False
+
+    >>> make_buffer(3, True)
     '   '
 
-    >>> make_buffer(True, -1)
+    >>> make_buffer(-1, True)
     ''
 
-    >>> make_buffer(False, -1)
+    >>> make_buffer(-1, True)
     ''
     """
 
-    a_buffer = '' # b''
+    a_buffer = ''
 
     try:
-        for i in range(buffer_size):
-            a_buffer += ' '
+        for i in xrange(buffer_size):
+            if zero == True:
+                a_buffer += ' '
+            else:
+                a_buffer += chr(randint(0, 255))
 
     except err:
-        if debug == True:
-            print('%s' % str(err))
         return ''
 
     return a_buffer
@@ -510,7 +520,7 @@ def make_buffer(debug, buffer_size):
 # End of make_buffer function
 
 
-def fss_make_context_list(basepath, current_path, nb_times, nb_threads):
+def fss_make_context_list(basepath, current_path, nb_times, nb_process):
     """Make a context list for the FileSystem test suite
 
     >>> fss_make_context_list('/tmp/mzfft', '', 3, 2)
@@ -518,7 +528,7 @@ def fss_make_context_list(basepath, current_path, nb_times, nb_threads):
     """
 
     context_list = []
-    for i in range(nb_threads):
+    for i in xrange(nb_process):
         a_context = basepath + '/' + str(i), current_path, nb_times
         context_list.append(a_context)
 
@@ -527,7 +537,7 @@ def fss_make_context_list(basepath, current_path, nb_times, nb_threads):
 # End of fss_make_context_list
 
 
-def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
+def FileSystem_Tests(basepath, nb_process, step, debug, buffer_size):
     """Filesystem test collector
 
     Collects all defined tests for the FileSystem tests and returns it
@@ -536,8 +546,9 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs = stress.TestSuite('Files', 'Files related tests')
 
+
     # Test 0 : Directories Creation
-    dir_context = fss_make_context_list(basepath, '', 100, nb_threads)
+    dir_context = fss_make_context_list(basepath, '', 100, nb_process)
 
     dir_funcs = fss_tests_init, make_directory_test, fss_tests_final, \
                 fss_tests_vary, fss_print_c
@@ -548,8 +559,9 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs.add_test(how_many_directories)
 
+
     # Test 1 : Files Creation
-    file_context = fss_make_context_list(basepath, '', 512, nb_threads)
+    file_context = fss_make_context_list(basepath, '', 512, nb_process)
 
     file_funcs = fss_tests_init, make_files_test, fss_tests_final, \
                  fss_tests_vary, fss_print_c
@@ -560,24 +572,35 @@ def FileSystem_Tests(basepath, nb_threads, step, debug, buffer_size):
 
     stressfs.add_test(how_many_files)
 
+
     # Test 2 : Zero Filed Files Creation (file_size variation)
-    a_buffer = make_buffer(debug, buffer_size)
+    # Context is : path, current path, number of files to create, buffer to fill
+    # the files with, size of the files (in  bytes), buffer size (in bytes)
+    a_buffer = '' # Is created at init time
+    mzfft_context = mzfft_make_context_list(basepath, '', 2048, a_buffer,  \
+                                            512, buffer_size, nb_process)
 
-    if len(a_buffer) > 0 :
-        mzfft_context = mzfft_make_context_list(basepath, '', 2048, a_buffer,  \
-                                                512, nb_threads)
+    mzfft_funcs = mzfft_init, make_zero_filed_files_test, mzfft_final,     \
+                  mzfft_vary_file_size, mzfft_print_c
 
-        mzfft_funcs = mzfft_init, make_zero_filed_files_test, mzfft_final,     \
-                      mzfft_vary_file_size, mzfft_print_c
+    mzfft = stress.Test('Space filed files creation',
+            'Creates space filed files (size vary - buffer size is an option)',\
+            mzfft_funcs, mzfft_context, step, debug)
 
-        mzfft = stress.Test('Zero filed files creation',
-        'Creates zero filed files (size vary - buffer size is an option)',\
-        mzfft_funcs, mzfft_context, step, debug)
+    stressfs.add_test(mzfft)
 
-        stressfs.add_test(mzfft)
+    # Add here tests with buffer variation and may be number of files variation
+    # Add same tests with random values
+    # Try if it is possible to mix two or three variations !
 
-    elif debug == True:
-        print('Could not add Zero filed files creation test to TestSuite !')
+    # Other tests to add : create a fix number of files (of a fixed size) and
+    # read them randomly (in random positions) (Force random to be the same at
+    # each tests). Two tests can be made : same files for all process or
+    # different files
+
+    # See if it is possible to do a test that will mix the others at a time.
+
+    # Add a max subdirectory test (dir in dir in dir in dir ...)
 
     if debug == True:
         print('%s' % str(stressfs))

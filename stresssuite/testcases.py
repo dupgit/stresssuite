@@ -24,7 +24,6 @@
 # This file is heavyly based on test_doc.py that you will found in the
 # hachoir project thanks to Victor Stinner
 
-
 import os
 import sys
 import doctest
